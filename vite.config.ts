@@ -9,5 +9,6 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src')
     }
   },
-  plugins: createVitePlugins()
+  plugins: createVitePlugins(),
+  base: './',
 })
