@@ -12,6 +12,9 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, 'src')
       }
     },
-    plugins: createVitePlugins()
+    plugins: createVitePlugins(),
+    esbuild: {
+      pure: ['console.log'] // 去除console.log
+    }
   }
 })
