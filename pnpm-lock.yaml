@@ -115,6 +115,9 @@ devDependencies:
   vite-plugin-glsl:
     specifier: ^1.1.2
     version: registry.npmmirror.com/vite-plugin-glsl@1.1.2(vite@4.4.9)
+  vite-plugin-restart:
+    specifier: ^0.3.1
+    version: registry.npmmirror.com/vite-plugin-restart@0.3.1(vite@4.4.9)
   vue-ts:
     specifier: ^1.0.11
     version: registry.npmmirror.com/vue-ts@1.0.11
@@ -4862,6 +4865,18 @@ packages:
       vite: registry.npmmirror.com/vite@4.4.9(@types/node@20.6.0)(sass@1.66.1)
     transitivePeerDependencies:
       - rollup
+    dev: true
+
+  registry.npmmirror.com/vite-plugin-restart@0.3.1(vite@4.4.9):
+    resolution: {integrity: sha512-LVe74MLUwaOzXVUgRGiphYbAYNgdGF6mP5vxj5BKcKkdmzvuuw79qcNgn9kHKKaIlCCjmOUiY3qlJ8jBSBUCoA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/vite-plugin-restart/-/vite-plugin-restart-0.3.1.tgz}
+    id: registry.npmmirror.com/vite-plugin-restart/0.3.1
+    name: vite-plugin-restart
+    version: 0.3.1
+    peerDependencies:
+      vite: ^2.9.0 || ^3.0.0 || ^4.0.0
+    dependencies:
+      micromatch: registry.npmmirror.com/micromatch@4.0.5
+      vite: registry.npmmirror.com/vite@4.4.9(@types/node@20.6.0)(sass@1.66.1)
     dev: true
 
   registry.npmmirror.com/vite@4.4.9(@types/node@20.6.0)(sass@1.66.1):

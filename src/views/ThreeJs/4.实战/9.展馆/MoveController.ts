@@ -27,7 +27,7 @@ export class MoveController {
     upVector: new Vector3(0, 1, 0),
     velocity: new Vector3(),
     speed: 12,
-    jumpHeight: 20,
+    jumpHeight: 100,
     gravity: -50
   }
 
@@ -87,9 +87,10 @@ export class MoveController {
   }
 
   update = (delta: number) => {
-    const { character, orbitController, camera } = this
     this.#moveAndJump(delta)
     collider.value && this.#checkCollision(delta, collider.value)
+    // 更新相机及控制器
+    const { character, orbitController, camera } = this
     camera.position.sub(orbitController.target)
     orbitController.target.copy(character.position)
     camera.position.add(character.position)
@@ -97,38 +98,38 @@ export class MoveController {
 
   #moveAndJump(delta: number) {
     const { forward, backward, left, right, jump } = this.moveState
-    if (!(forward || backward || left || right || jump)) return
+    // if (forward || backward || left || right || jump) return
     const { tempVector, velocity, speed, upVector, gravity } = this.moveInfo
     const { character, orbitController, camera } = this
 
-    tempVector.set(0, 0, 0)
+    if (jump) {
+      velocity.y += gravity * delta
+    } else {
+      velocity.y = delta * gravity
+    }
+
+    character.position.addScaledVector(velocity, delta)
+    const angle = orbitController.getAzimuthalAngle()
     if (forward) {
-      tempVector.z = -1
+      tempVector.set(0, 0, -1).applyAxisAngle(upVector, angle)
+      character.position.addScaledVector(tempVector, speed * delta)
     }
 
     if (backward) {
-      tempVector.z = 1
+      tempVector.set(0, 0, 1).applyAxisAngle(upVector, angle)
+      character.position.addScaledVector(tempVector, speed * delta)
     }
 
     if (left) {
-      tempVector.x = -1
+      tempVector.set(-1, 0, 0).applyAxisAngle(upVector, angle)
+      character.position.addScaledVector(tempVector, speed * delta)
     }
 
     if (right) {
-      tempVector.x = 1
+      tempVector.set(1, 0, 0).applyAxisAngle(upVector, angle)
+      character.position.addScaledVector(tempVector, speed * delta)
     }
 
-    if (jump) {
-      velocity.y += gravity * delta
-      character.position.addScaledVector(velocity, delta)
-    }
-
-    // 控制器的方位角
-    const azimuthalAngle = orbitController.getAzimuthalAngle()
-    tempVector.applyAxisAngle(upVector, azimuthalAngle)
-    // 更新角色位置
-    character.position.addScaledVector(tempVector.normalize(), speed * delta)
-    // 更新相机及控制器
     character.updateMatrixWorld()
   }
 
@@ -181,26 +182,19 @@ export class MoveController {
     const delta_vector = this.temp_vector2
     delta_vector.subVectors(new_position, this.character.position)
 
+    this.moveState.jump = delta_vector.y <= Math.abs(delta_time * this.moveInfo.velocity.y * 0.25)
+
     const offset = Math.max(0.0, delta_vector.length() - 1e-5)
     delta_vector.normalize().multiplyScalar(offset)
 
     // 调整player模型位置
     this.character.position.add(delta_vector)
 
-    if (delta_vector.y > Math.abs(delta_time * this.moveInfo.velocity.y * 0.25)) {
-      this.moveState.jump = false
+    if (!this.moveState.jump) {
+      delta_vector.normalize()
+      this.moveInfo.velocity.addScaledVector(delta_vector, -delta_vector.dot(this.moveInfo.velocity))
+    } else {
       this.moveInfo.velocity.set(0, 0, 0)
-      this.character.position.y = 0
     }
-
-    // this.moveState.jump = delta_vector.y < Math.abs(delta_time * this.moveInfo.velocity.y * 0.25)
-    // this.moveState.jump = this.character.position.y > 0
-
-    // if (!this.moveState.jump) {
-    //   delta_vector.normalize()
-    //   this.moveInfo.velocity.addScaledVector(delta_vector, -delta_vector.dot(this.moveInfo.velocity))
-    // } else {
-    //   this.moveInfo.velocity.set(0, 0, 0)
-    // }
   }
 }

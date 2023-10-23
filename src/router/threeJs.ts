@@ -112,6 +112,11 @@ export const threeJsPages: RouteRecordRawExt[] = [
         path: '/threeJsTest/Exhibition',
         meta: { title: '展馆' },
         component: () => import('@/views/ThreeJs/4.实战/9.展馆/Index.vue')
+      },
+      {
+        path: '/threeJsTest/character',
+        meta: { title: '角色运动' },
+        component: () => import('@/views/ThreeJs/4.实战/10.角色移动/Index.vue')
       }
     ]
   }
