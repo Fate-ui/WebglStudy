@@ -1,0 +1,1 @@
+import{c as o}from"./index-60bef513.js";import{d as t}from"./base-6a0060ca.js";import{X as r,a as s}from"./index-88e77320.js";const C=t([String,Object,Function]),y={Close:o},P=({from:a,replacement:n,scope:p,version:c,ref:i,type:m="API"},e)=>{r(()=>s(e),f=>{},{immediate:!0})};export{y as C,C as i,P as u};
