@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onMounted, shallowRef } from 'vue'
+import { onMounted, onUnmounted, shallowRef } from 'vue'
 import { Clock, Fog, Line3, Mesh, MeshStandardMaterial, PCFSoftShadowMap, PerspectiveCamera, SRGBColorSpace, Scene, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry'
 import { MoveController } from '@/views/ThreeJs/4.实战/10.角色移动/MoveController'
 import { EnvironmentController } from '@/views/ThreeJs/4.实战/10.角色移动/EnvironmentController'
+import { disposeThreeJs } from '@/utils'
 
 const bgColor = 0x263238 / 2
 const scene = new Scene()
@@ -85,6 +86,10 @@ function changePersonPerspective() {
     controls.maxDistance = 1e-4
   }
 }
+
+onUnmounted(() => {
+  disposeThreeJs(scene, renderer)
+})
 </script>
 
 <template>

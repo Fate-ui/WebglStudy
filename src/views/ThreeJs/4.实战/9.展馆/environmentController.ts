@@ -1,8 +1,7 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { Light, Mesh, PlaneGeometry, SRGBColorSpace, ShaderMaterial, TextureLoader, Vector3 } from 'three'
+import { Box3, Light, Mesh, PlaneGeometry, SRGBColorSpace, ShaderMaterial, TextureLoader, Vector3 } from 'three'
 import { Reflector } from 'three/examples/jsm/objects/Reflector'
 import { MeshBVH, StaticGeometryGenerator } from 'three-mesh-bvh'
-import type { MeshBVHOptions } from 'three-mesh-bvh'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import type { Group, MeshBasicMaterial, Scene, Texture } from 'three'
 import { boardTextures, boardsInfo, canvasSize } from '@/views/ThreeJs/4.实战/9.展馆/Index'
@@ -11,7 +10,6 @@ export const collider = ref<Mesh>()
 export class EnvironmentController {
   loader = new GLTFLoader()
   textureLoader = new TextureLoader()
-  modelOffset = new Vector3(0, -5, 0)
 
   collisionScene: Group
 
@@ -34,14 +32,15 @@ export class EnvironmentController {
    * 加载碰撞检测模型
    * */
   #loadSceneAndCollisionDetection(): Promise<GLTF> {
-    const { loader, scene, modelOffset } = this
+    const { loader, scene } = this
     return new Promise((resolve, reject) => {
       loader.load('model/scene_collision.glb', (gltf) => {
-        const model = gltf.scene
-        this.collisionScene = model
-        model.position.add(modelOffset)
-        model.updateMatrixWorld(true)
-        model.traverse((item) => {
+        const gltfScene = gltf.scene
+
+        gltfScene.updateMatrixWorld(true)
+
+        this.collisionScene = gltfScene
+        gltfScene.traverse((item) => {
           if (item.name === 'home001' || item.name === 'PointLight') {
             item.castShadow = true
           }
@@ -65,10 +64,10 @@ export class EnvironmentController {
         staticGenerator.attributes = ['position']
 
         const mergedGeometry = staticGenerator.generate()
-        mergedGeometry.boundsTree = new MeshBVH(mergedGeometry, { lazyGeneration: false } as MeshBVHOptions)
+        mergedGeometry.boundsTree = new MeshBVH(mergedGeometry)
 
         collider.value = new Mesh(mergedGeometry)
-        scene.add(model)
+        scene.add(gltfScene)
         resolve(gltf)
       })
     })
@@ -78,11 +77,10 @@ export class EnvironmentController {
    * 加载无需碰撞检测模型
    * */
   #loadStaticScene(): Promise<GLTF> {
-    const { loader, scene, modelOffset } = this
+    const { loader, scene } = this
     return new Promise((resolve) => {
       loader.load('model/scene_desk_obj.glb', (gltf) => {
         const model = gltf.scene
-        model.position.add(modelOffset)
         scene.add(model)
         resolve(gltf)
       })
@@ -169,7 +167,6 @@ export class EnvironmentController {
       textureHeight: canvasSize.height * window.devicePixelRatio,
       color: 0xffffff
     })
-    mirror.position.add(this.modelOffset)
     if (mirror.material instanceof ShaderMaterial) {
       mirror.material.transparent = true
       mirror.material.fragmentShader = mirror.material.fragmentShader.replace(

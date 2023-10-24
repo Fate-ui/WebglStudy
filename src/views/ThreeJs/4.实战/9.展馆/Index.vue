@@ -5,11 +5,11 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { ACESFilmicToneMapping, Clock, Mesh, MeshBasicMaterial, PerspectiveCamera, SRGBColorSpace, Scene, WebGLRenderer } from 'three'
 import { disposeThreeJs } from '@/utils'
 import { MoveController } from '@/views/ThreeJs/4.实战/9.展馆/MoveController'
-import { EnvironmentController } from '@/views/ThreeJs/4.实战/9.展馆/environmentController'
+import { EnvironmentController, collider } from '@/views/ThreeJs/4.实战/9.展馆/environmentController'
 import { canvasSize } from '@/views/ThreeJs/4.实战/9.展馆/Index'
 
 const scene = new Scene()
-const camera = new PerspectiveCamera(50, canvasSize.width / canvasSize.height, 1, 9000)
+const camera = new PerspectiveCamera(55, canvasSize.width / canvasSize.height, 0.1, 1000)
 camera.position.set(0, 0, 3)
 
 const renderer = new WebGLRenderer({ antialias: true })
@@ -22,9 +22,9 @@ const containerRef = shallowRef<HTMLElement>()
 onMounted(() => {
   containerRef.value.appendChild(renderer.domElement)
 })
-const orbitControl = new OrbitControls(camera, renderer.domElement)
-orbitControl.minDistance = 1e-4
-orbitControl.maxDistance = 1e-4
+const controls = new OrbitControls(camera, renderer.domElement)
+controls.minDistance = 1e-4
+controls.maxDistance = 1e-4
 
 const environmentController = new EnvironmentController(scene)
 
@@ -37,16 +37,17 @@ character.geometry.translate(0, -0.25, 0)
 /**
  * 角色移动
  * */
-const moveController = new MoveController(character, orbitControl, camera)
+const moveController = new MoveController(character, controls, camera)
 
+moveController.reset()
 scene.add(character)
 
 const clock = new Clock()
 renderer.setAnimationLoop(() => {
   renderer.render(scene, camera)
-  orbitControl.update()
-  const delta = clock.getDelta()
-  moveController.update(delta)
+  controls.update()
+  const delta = Math.min(clock.getDelta(), 0.05)
+  collider.value && moveController.updatePlayer(delta, collider.value)
 })
 
 onUnmounted(() => {

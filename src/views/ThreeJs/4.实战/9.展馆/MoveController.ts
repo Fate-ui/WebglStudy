@@ -1,200 +1,215 @@
 import { useEventListener } from '@vueuse/core'
 import { Box3, Line3, Matrix4, Vector3 } from 'three'
-import type { Mesh, MeshBasicMaterial, PerspectiveCamera } from 'three'
+import type { Mesh, MeshBasicMaterial, Object3DEventMap } from 'three'
 import type { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry'
-import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { collider } from '@/views/ThreeJs/4.实战/9.展馆/environmentController'
-
-const forwardKeys = ['w', 'W', 'ArrowUp']
-const backwardKeys = ['s', 'S', 'ArrowDown']
-const leftKeys = ['a', 'A', 'ArrowLeft']
-const rightKeys = ['d', 'D', 'ArrowRight']
 
 export class MoveController {
-  moveState = {
+  private moveState = {
     forward: false,
     backward: false,
     left: false,
     right: false,
-    jump: false
+    playerIsOnGround: true
   }
 
-  private character: Mesh<RoundedBoxGeometry, MeshBasicMaterial>
-  private orbitController: OrbitControls
-  private camera: PerspectiveCamera
-  private moveInfo = {
-    tempVector: new Vector3(),
+  private playerVelocity = new Vector3()
+  private player: Mesh<RoundedBoxGeometry, MeshBasicMaterial, Object3DEventMap>
+
+  private temp = {
     upVector: new Vector3(0, 1, 0),
-    velocity: new Vector3(),
-    speed: 12,
-    jumpHeight: 100,
+    tempVector: new Vector3(),
+    tempVector2: new Vector3(),
+    tempBox: new Box3(),
+    tempMat: new Matrix4(),
+    tempSegment: new Line3()
+  }
+
+  private params = {
+    playerSpeed: 12,
     gravity: -50
   }
 
-  private capsule_info = {
-    // 胶囊体数据
+  private controls
+  private camera
+  private capsuleInfo = {
     radius: 1,
-    segment: new Line3(new Vector3(), new Vector3(0, -5, 0.0))
+    segment: new Line3(new Vector3(), new Vector3(0, -5.0, 0.0))
   }
-  private temp_box = new Box3()
-  private temp_mat = new Matrix4()
-  private temp_segment = new Line3()
-  private temp_vector2 = new Vector3()
-
-  constructor(character: Mesh<RoundedBoxGeometry, MeshBasicMaterial>, orbitController: OrbitControls, camera: PerspectiveCamera) {
-    this.character = character
-    this.orbitController = orbitController
-    this.camera = camera
-
+  constructor(player: Mesh<RoundedBoxGeometry, MeshBasicMaterial, Object3DEventMap>, controls, camera) {
     useEventListener('keydown', this.#onKeyDown)
     useEventListener('keyup', this.#onKeyUp)
+    this.player = player
+    this.controls = controls
+    this.camera = camera
   }
 
-  #onKeyDown = (e: KeyboardEvent) => {
-    this.#changMoveState(e, true)
-    // 空格键
-    console.log(this.moveState.jump)
-    if (e.key === ' ' && !this.moveState.jump) {
-      this.moveState.jump = true
-      this.moveInfo.velocity.y = this.moveInfo.jumpHeight
+  #onKeyDown = (e) => {
+    const { moveState } = this
+    switch (e.code) {
+      case 'KeyW':
+      case 'ArrowUp':
+        moveState.forward = true
+        break
+      case 'KeyS':
+      case 'ArrowDown':
+        moveState.backward = true
+        break
+      case 'KeyA':
+      case 'ArrowLeft':
+        moveState.left = true
+        break
+      case 'KeyD':
+      case 'ArrowRight':
+        moveState.right = true
+        break
+      case 'Space':
+        if (moveState.playerIsOnGround) {
+          this.playerVelocity.y = 20
+          moveState.playerIsOnGround = false
+        }
     }
   }
 
-  #onKeyUp = (e: KeyboardEvent) => {
-    this.#changMoveState(e, false)
-  }
-
-  #changMoveState(e: KeyboardEvent, state: boolean) {
-    if (forwardKeys.includes(e.key)) {
-      this.moveState.forward = state
-      return
-    }
-
-    if (backwardKeys.includes(e.key)) {
-      this.moveState.backward = state
-      return
-    }
-
-    if (leftKeys.includes(e.key)) {
-      this.moveState.left = state
-      return
-    }
-
-    if (rightKeys.includes(e.key)) {
-      this.moveState.right = state
-      return
+  #onKeyUp = (e) => {
+    const { moveState } = this
+    switch (e.code) {
+      case 'KeyW':
+      case 'ArrowUp':
+        moveState.forward = false
+        break
+      case 'KeyS':
+      case 'ArrowDown':
+        moveState.backward = false
+        break
+      case 'KeyA':
+      case 'ArrowLeft':
+        moveState.left = false
+        break
+      case 'KeyD':
+      case 'ArrowRight':
+        moveState.right = false
+        break
     }
   }
 
-  update = (delta: number) => {
-    this.#moveAndJump(delta)
-    collider.value && this.#checkCollision(delta, collider.value)
-    // 更新相机及控制器
-    const { character, orbitController, camera } = this
-    camera.position.sub(orbitController.target)
-    orbitController.target.copy(character.position)
-    camera.position.add(character.position)
-  }
-
-  #moveAndJump(delta: number) {
-    const { forward, backward, left, right, jump } = this.moveState
-    // if (forward || backward || left || right || jump) return
-    const { tempVector, velocity, speed, upVector, gravity } = this.moveInfo
-    const { character, orbitController, camera } = this
-
-    if (jump) {
-      velocity.y += gravity * delta
+  updatePlayer(delta, collider) {
+    const { playerVelocity, player, params, controls, camera } = this
+    const { playerIsOnGround, forward, backward, right, left } = this.moveState
+    const { upVector, tempVector } = this.temp
+    if (playerIsOnGround) {
+      playerVelocity.y = delta * params.gravity
     } else {
-      velocity.y = delta * gravity
+      playerVelocity.y += delta * params.gravity
     }
 
-    character.position.addScaledVector(velocity, delta)
-    const angle = orbitController.getAzimuthalAngle()
+    player.position.addScaledVector(playerVelocity, delta)
+
+    // move the player
+    const angle = controls.getAzimuthalAngle()
     if (forward) {
       tempVector.set(0, 0, -1).applyAxisAngle(upVector, angle)
-      character.position.addScaledVector(tempVector, speed * delta)
+      player.position.addScaledVector(tempVector, params.playerSpeed * delta)
     }
 
     if (backward) {
       tempVector.set(0, 0, 1).applyAxisAngle(upVector, angle)
-      character.position.addScaledVector(tempVector, speed * delta)
+      player.position.addScaledVector(tempVector, params.playerSpeed * delta)
     }
 
     if (left) {
       tempVector.set(-1, 0, 0).applyAxisAngle(upVector, angle)
-      character.position.addScaledVector(tempVector, speed * delta)
+      player.position.addScaledVector(tempVector, params.playerSpeed * delta)
     }
 
     if (right) {
       tempVector.set(1, 0, 0).applyAxisAngle(upVector, angle)
-      character.position.addScaledVector(tempVector, speed * delta)
+      player.position.addScaledVector(tempVector, params.playerSpeed * delta)
     }
 
-    character.updateMatrixWorld()
-  }
+    player.updateMatrixWorld()
 
-  /**
-   * 碰撞检测
-   * */
-  #checkCollision(delta_time: number, collider: Mesh) {
-    // 根据碰撞来调整player位置
-    const capsule_info = this.capsule_info
-    this.temp_box.makeEmpty()
-    this.temp_mat.copy(collider.matrixWorld).invert()
-    this.temp_segment.copy(capsule_info.segment)
+    // adjust player position based on collisions
+    const { tempBox, tempMat, tempSegment, tempVector2 } = this.temp
+    const capsuleInfo = this.capsuleInfo
+    tempBox.makeEmpty()
+    tempMat.copy(collider.matrixWorld).invert()
+    tempSegment.copy(capsuleInfo.segment)
 
-    // 获取胶囊体在对撞机局部空间中的位置
-    this.temp_segment.start.applyMatrix4(this.character.matrixWorld).applyMatrix4(this.temp_mat)
-    this.temp_segment.end.applyMatrix4(this.character.matrixWorld).applyMatrix4(this.temp_mat)
+    // get the position of the capsule in the local space of the collider
+    tempSegment.start.applyMatrix4(player.matrixWorld).applyMatrix4(tempMat)
+    tempSegment.end.applyMatrix4(player.matrixWorld).applyMatrix4(tempMat)
 
-    // 获取胶囊体的轴对齐边界框
-    this.temp_box.expandByPoint(this.temp_segment.start)
-    this.temp_box.expandByPoint(this.temp_segment.end)
+    // get the axis aligned bounding box of the capsule
+    tempBox.expandByPoint(tempSegment.start)
+    tempBox.expandByPoint(tempSegment.end)
 
-    this.temp_box.min.addScalar(-capsule_info.radius)
-    this.temp_box.max.addScalar(capsule_info.radius)
+    tempBox.min.addScalar(-capsuleInfo.radius)
+    tempBox.max.addScalar(capsuleInfo.radius)
 
-    collider.geometry?.boundsTree?.shapecast({
-      intersectsBounds: (box) => box.intersectsBox(this.temp_box),
+    collider.geometry.boundsTree.shapecast({
+      intersectsBounds: (box) => box.intersectsBox(tempBox),
+
       intersectsTriangle: (tri) => {
-        // 检查场景是否与胶囊相交，并调整
-        console.log(this.moveInfo.tempVector)
-        const tri_point = this.moveInfo.tempVector
-        const capsule_point = this.temp_vector2
+        // check if the triangle is intersecting the capsule and adjust the
+        // capsule position if it is.
+        const triPoint = tempVector
+        const capsulePoint = tempVector2
 
-        const distance = tri.closestPointToSegment(this.temp_segment, tri_point, capsule_point)
-        if (distance < capsule_info.radius) {
-          const depth = capsule_info.radius - distance
-          const direction = capsule_point.sub(tri_point).normalize()
+        const distance = tri.closestPointToSegment(tempSegment, triPoint, capsulePoint)
+        if (distance < capsuleInfo.radius) {
+          const depth = capsuleInfo.radius - distance
+          const direction = capsulePoint.sub(triPoint).normalize()
 
-          this.temp_segment.start.addScaledVector(direction, depth)
-          this.temp_segment.end.addScaledVector(direction, depth)
+          tempSegment.start.addScaledVector(direction, depth)
+          tempSegment.end.addScaledVector(direction, depth)
         }
       }
     })
 
-    // 检查后得到胶囊体对撞机的调整位置
-    // 场景碰撞并移动它. capsule_info.segment.start被假定为玩家模型的原点。
-    const new_position = this.moveInfo.tempVector
-    new_position.copy(this.temp_segment.start).applyMatrix4(collider.matrixWorld)
+    // get the adjusted position of the capsule collider in world space after checking
+    // triangle collisions and moving it. capsuleInfo.segment.start is assumed to be
+    // the origin of the player model.
+    const newPosition = tempVector
+    newPosition.copy(tempSegment.start).applyMatrix4(collider.matrixWorld)
 
-    // 检查对撞机移动了多少
-    const delta_vector = this.temp_vector2
-    delta_vector.subVectors(new_position, this.character.position)
+    // check how much the collider was moved
+    const deltaVector = tempVector2
+    deltaVector.subVectors(newPosition, player.position)
 
-    this.moveState.jump = delta_vector.y <= Math.abs(delta_time * this.moveInfo.velocity.y * 0.25)
+    // if the player was primarily adjusted vertically we assume it's on something we should consider ground
+    this.moveState.playerIsOnGround = deltaVector.y > Math.abs(delta * playerVelocity.y * 0.25)
 
-    const offset = Math.max(0.0, delta_vector.length() - 1e-5)
-    delta_vector.normalize().multiplyScalar(offset)
+    const offset = Math.max(0.0, deltaVector.length() - 1e-5)
+    deltaVector.normalize().multiplyScalar(offset)
 
-    // 调整player模型位置
-    this.character.position.add(delta_vector)
+    // adjust the player model
+    player.position.add(deltaVector)
 
-    if (!this.moveState.jump) {
-      delta_vector.normalize()
-      this.moveInfo.velocity.addScaledVector(delta_vector, -delta_vector.dot(this.moveInfo.velocity))
+    if (!playerIsOnGround) {
+      deltaVector.normalize()
+      playerVelocity.addScaledVector(deltaVector, -deltaVector.dot(playerVelocity))
     } else {
-      this.moveInfo.velocity.set(0, 0, 0)
+      playerVelocity.set(0, 0, 0)
     }
+
+    // adjust the camera
+    camera.position.sub(controls.target)
+    controls.target.copy(player.position)
+    camera.position.add(player.position)
+
+    // if the player has fallen too far below the level reset their position to the start
+    if (player.position.y < -25) {
+      this.reset()
+    }
+  }
+
+  reset = () => {
+    const { playerVelocity, player, camera, controls } = this
+    playerVelocity.set(0, 0, 0)
+    player.position.set(0, 5, 0)
+    camera.position.sub(controls.target)
+    controls.target.copy(player.position)
+    camera.position.add(player.position)
+    controls.update()
   }
 }
