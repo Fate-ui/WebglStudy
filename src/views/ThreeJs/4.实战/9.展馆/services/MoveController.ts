@@ -212,4 +212,9 @@ export class MoveController {
     camera.position.add(player.position)
     controls.update()
   }
+
+  get isMoving() {
+    const { forward, backward, left, right, playerIsOnGround } = this.moveState
+    return forward || backward || left || right || !playerIsOnGround
+  }
 }

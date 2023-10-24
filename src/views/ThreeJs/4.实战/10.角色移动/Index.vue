@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, shallowRef } from 'vue'
 import { Clock, Fog, Line3, Mesh, MeshStandardMaterial, PCFSoftShadowMap, PerspectiveCamera, SRGBColorSpace, Scene, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry'
+import { useRafFn } from '@vueuse/core'
 import { MoveController } from '@/views/ThreeJs/4.实战/10.角色移动/MoveController'
 import { EnvironmentController } from '@/views/ThreeJs/4.实战/10.角色移动/EnvironmentController'
 import { disposeThreeJs } from '@/utils'
@@ -30,24 +31,6 @@ const controls = new OrbitControls(camera, renderer.domElement)
 
 const clock = new Clock()
 const environmentController = new EnvironmentController(scene)
-function animate() {
-  requestAnimationFrame(animate)
-  const { collider, visualizer } = environmentController
-  const delta = Math.min(clock.getDelta(), 0.1)
-  if (collider) {
-    collider.visible = params.displayCollider
-    visualizer.visible = params.displayBVH
-
-    const physicsSteps = params.physicsSteps
-
-    for (let i = 0; i < physicsSteps; i++) {
-      moveController.updatePlayer(delta / physicsSteps, collider)
-    }
-  }
-
-  controls.update()
-  renderer.render(scene, camera)
-}
 
 let gui, stats
 const player = new Mesh(new RoundedBoxGeometry(1.0, 2.0, 1.0, 10, 0.5), new MeshStandardMaterial())
@@ -71,8 +54,6 @@ player.material.shadowSide = 2
 scene.add(player)
 moveController.reset()
 
-animate()
-
 const personPerspective = ref('third')
 function changePersonPerspective() {
   if (personPerspective.value === 'third') {
@@ -86,6 +67,24 @@ function changePersonPerspective() {
     controls.maxDistance = 1e-4
   }
 }
+
+useRafFn(() => {
+  const { collider, visualizer } = environmentController
+  const delta = Math.min(clock.getDelta(), 0.1)
+  if (collider) {
+    collider.visible = params.displayCollider
+    visualizer.visible = params.displayBVH
+
+    const physicsSteps = params.physicsSteps
+
+    for (let i = 0; i < physicsSteps; i++) {
+      moveController.updatePlayer(delta / physicsSteps, collider)
+    }
+  }
+
+  controls.update()
+  renderer.render(scene, camera)
+})
 
 onUnmounted(() => {
   disposeThreeJs(scene, renderer)

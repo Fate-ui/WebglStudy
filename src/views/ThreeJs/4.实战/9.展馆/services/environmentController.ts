@@ -3,7 +3,7 @@ import { Box3, Light, Mesh, PlaneGeometry, SRGBColorSpace, ShaderMaterial, Textu
 import { Reflector } from 'three/examples/jsm/objects/Reflector'
 import { MeshBVH, StaticGeometryGenerator } from 'three-mesh-bvh'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
-import type { Group, MeshBasicMaterial, Scene, Texture } from 'three'
+import type { Group, MeshBasicMaterial, Object3D, Scene, Texture } from 'three'
 import { boardTextures, boardsInfo, canvasSize } from '@/views/ThreeJs/4.实战/9.展馆/Index'
 
 export const collider = ref<Mesh>()
@@ -16,6 +16,10 @@ export class EnvironmentController {
   textureBoards: Record<string, Texture> = {}
   galleryBoards: Record<string, Mesh> = {}
 
+  raycastObjects: Object3D[] = []
+
+  loaded = ref(false)
+
   private scene: Scene
 
   constructor(scene: Scene) {
@@ -25,6 +29,7 @@ export class EnvironmentController {
     const allAsync = [this.#loadSceneAndCollisionDetection(), this.#loadBoardTexture()]
     Promise.all(allAsync).then(() => {
       this.#configureGallery()
+      this.loaded.value = true
     })
   }
 
@@ -57,6 +62,7 @@ export class EnvironmentController {
           // 提取出相框元素
           if (item instanceof Mesh && /gallery.*_board/.test(item.name)) {
             this.galleryBoards[item.name] = item
+            this.raycastObjects.push(item)
           }
         })
 
