@@ -11,6 +11,8 @@ import { canvasSize } from '@/views/ThreeJs/4.实战/9.展馆/Index'
 import { RayCasterController } from '@/views/ThreeJs/4.实战/9.展馆/services/RayCasterController'
 import Tip from '@/views/ThreeJs/4.实战/9.展馆/Tip.vue'
 import Detail from '@/views/ThreeJs/4.实战/9.展馆/Detail.vue'
+import { Css3DController } from '@/views/ThreeJs/4.实战/9.展馆/services/Css3DController'
+import { AudioController } from '@/views/ThreeJs/4.实战/9.展馆/services/AudioController'
 
 const scene = new Scene()
 const camera = new PerspectiveCamera(55, canvasSize.width / canvasSize.height, 0.1, 1000)
@@ -48,10 +50,25 @@ character.geometry.translate(0, -0.25, 0)
 scene.add(character)
 
 /**
+ * css3d
+ * */
+const css3DController = new Css3DController(scene)
+
+/**
  * 角色移动
  * */
 const moveController = new MoveController(character, controls, camera)
 moveController.reset()
+
+/**
+ * 播放音乐
+ * */
+const audioController = new AudioController(scene, camera)
+const isPlaying = ref(false)
+function playMusic() {
+  isPlaying.value = !isPlaying.value
+  isPlaying.value ? audioController.play() : audioController.pause()
+}
 
 const clock = new Clock()
 renderer.setAnimationLoop(() => {
@@ -60,6 +77,7 @@ renderer.setAnimationLoop(() => {
   const delta = Math.min(clock.getDelta(), 0.05)
   collider.value && moveController.updatePlayer(delta, collider.value)
   moveController.isMoving && rayCasterController.updateTooltipRayCast(onShowTip, onHideTip)
+  css3DController.update(camera)
 })
 
 /**提示信息*/
@@ -71,6 +89,8 @@ function onShowTip(object: Object3D<Object3DEventMap>) {
 function onHideTip() {
   currentBoard.value = null
 }
+
+const loading = computed(() => environmentController.loadingState.progress.value < 1)
 
 /**
  * 详情展示
@@ -89,6 +109,9 @@ onUnmounted(() => {
 
 <template>
   <div ref="containerRef" />
+  <div v-loading.fullscreen="loading" class="fixed left-20px top-20px">
+    <el-button type="primary" @click="playMusic">{{ isPlaying ? '暂停音乐' : '播放音乐' }}</el-button>
+  </div>
   <transition appear name="fade">
     <Tip v-if="currentBoard" :title="currentBoard" />
   </transition>

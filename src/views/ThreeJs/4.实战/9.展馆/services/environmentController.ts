@@ -22,6 +22,12 @@ export class EnvironmentController {
 
   private scene: Scene
 
+  loadingState = {
+    loaded: [],
+    total: [],
+    progress: ref(0)
+  }
+
   constructor(scene: Scene) {
     this.scene = scene
     this.#createSpecularReflection()
@@ -39,43 +45,52 @@ export class EnvironmentController {
   #loadSceneAndCollisionDetection(): Promise<GLTF> {
     const { loader, scene } = this
     return new Promise((resolve, reject) => {
-      loader.load('model/scene_collision.glb', (gltf) => {
-        const gltfScene = gltf.scene
+      loader.load(
+        'model/scene_collision.glb',
+        (gltf) => {
+          const gltfScene = gltf.scene
 
-        gltfScene.updateMatrixWorld(true)
+          gltfScene.updateMatrixWorld(true)
 
-        this.collisionScene = gltfScene
-        gltfScene.traverse((item) => {
-          if (item.name === 'home001' || item.name === 'PointLight') {
-            item.castShadow = true
-          }
+          this.collisionScene = gltfScene
+          gltfScene.traverse((item) => {
+            if (item.name === 'home001' || item.name === 'PointLight') {
+              item.castShadow = true
+            }
 
-          if (item.name.includes('PointLight') && item instanceof Light) {
-            item.intensity *= 2000
-          }
+            if (item.name.includes('PointLight') && item instanceof Light) {
+              item.intensity *= 2000
+            }
 
-          if (item.name === 'home002') {
-            item.castShadow = true
-            item.receiveShadow = true
-          }
+            if (item.name === 'home002') {
+              item.castShadow = true
+              item.receiveShadow = true
+            }
 
-          // 提取出相框元素
-          if (item instanceof Mesh && /gallery.*_board/.test(item.name)) {
-            this.galleryBoards[item.name] = item
-            this.raycastObjects.push(item)
-          }
-        })
+            // 提取出相框元素
+            if (item instanceof Mesh && /gallery.*_board/.test(item.name)) {
+              this.galleryBoards[item.name] = item
+              this.raycastObjects.push(item)
+            }
+          })
 
-        const staticGenerator = new StaticGeometryGenerator(this.collisionScene)
-        staticGenerator.attributes = ['position']
+          const staticGenerator = new StaticGeometryGenerator(this.collisionScene)
+          staticGenerator.attributes = ['position']
 
-        const mergedGeometry = staticGenerator.generate()
-        mergedGeometry.boundsTree = new MeshBVH(mergedGeometry)
+          const mergedGeometry = staticGenerator.generate()
+          mergedGeometry.boundsTree = new MeshBVH(mergedGeometry)
 
-        collider.value = new Mesh(mergedGeometry)
-        scene.add(gltfScene)
-        resolve(gltf)
-      })
+          collider.value = new Mesh(mergedGeometry)
+          scene.add(gltfScene)
+          resolve(gltf)
+        },
+        (e) => {
+          const { loaded, total, progress } = this.loadingState
+          loaded[0] = e.loaded
+          total[0] = e.total
+          progress.value = loaded.reduce((a, b) => a + b, 0) / total.reduce((a, b) => a + b, 0)
+        }
+      )
     })
   }
 
@@ -85,11 +100,20 @@ export class EnvironmentController {
   #loadStaticScene(): Promise<GLTF> {
     const { loader, scene } = this
     return new Promise((resolve) => {
-      loader.load('model/scene_desk_obj.glb', (gltf) => {
-        const model = gltf.scene
-        scene.add(model)
-        resolve(gltf)
-      })
+      loader.load(
+        'model/scene_desk_obj.glb',
+        (gltf) => {
+          const model = gltf.scene
+          scene.add(model)
+          resolve(gltf)
+        },
+        (e) => {
+          const { loaded, total, progress } = this.loadingState
+          loaded[1] = e.loaded
+          total[1] = e.total
+          progress.value = loaded.reduce((a, b) => a + b, 0) / total.reduce((a, b) => a + b, 0)
+        }
+      )
     })
   }
 

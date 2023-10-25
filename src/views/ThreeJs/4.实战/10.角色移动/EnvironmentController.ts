@@ -1,7 +1,7 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { Box3, DirectionalLight, Group, HemisphereLight, Mesh, MeshStandardMaterial } from 'three'
-import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils'
 import { MeshBVH, MeshBVHVisualizer, StaticGeometryGenerator } from 'three-mesh-bvh'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils'
 import type { Scene } from 'three'
 
 export class EnvironmentController {
@@ -69,7 +69,7 @@ export class EnvironmentController {
         })
 
         if (visualGeometries.length) {
-          const newGeom = mergeBufferGeometries(visualGeometries)
+          const newGeom = mergeGeometries(visualGeometries)
           const newMesh = new Mesh(newGeom, new MeshStandardMaterial({ color: Number.parseInt(hex), shadowSide: 2 }))
           newMesh.castShadow = true
           newMesh.receiveShadow = true
