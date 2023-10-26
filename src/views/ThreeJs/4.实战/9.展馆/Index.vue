@@ -9,8 +9,8 @@ import { MoveController } from '@/views/ThreeJs/4.实战/9.展馆/services/MoveC
 import { EnvironmentController, collider } from '@/views/ThreeJs/4.实战/9.展馆/services/environmentController'
 import { canvasSize } from '@/views/ThreeJs/4.实战/9.展馆/Index'
 import { RayCasterController } from '@/views/ThreeJs/4.实战/9.展馆/services/RayCasterController'
-import Tip from '@/views/ThreeJs/4.实战/9.展馆/Tip.vue'
-import Detail from '@/views/ThreeJs/4.实战/9.展馆/Detail.vue'
+import Tip from '@/views/ThreeJs/4.实战/9.展馆/components/Tip.vue'
+import Detail from '@/views/ThreeJs/4.实战/9.展馆/components/Detail.vue'
 import { Css3DController } from '@/views/ThreeJs/4.实战/9.展馆/services/Css3DController'
 import { AudioController } from '@/views/ThreeJs/4.实战/9.展馆/services/AudioController'
 
@@ -104,6 +104,7 @@ function onClickBoard(object: Object3D<Object3DEventMap>) {
 
 onUnmounted(() => {
   disposeThreeJs(scene, renderer)
+  css3DController.dispose()
 })
 </script>
 

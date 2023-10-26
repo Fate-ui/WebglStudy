@@ -1,10 +1,8 @@
-import { render } from 'vue'
 import { DoubleSide, Mesh, MeshStandardMaterial, NoBlending, PlaneGeometry, Scene } from 'three'
 import { CSS3DObject, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer'
 import { useEventListener } from '@vueuse/core'
 import type { PerspectiveCamera } from 'three'
 import { canvasSize } from '@/views/ThreeJs/4.实战/9.展馆/Index'
-import Tip from '@/views/ThreeJs/4.实战/9.展馆/Tip.vue'
 
 export class Css3DController {
   private cssScene: Scene
@@ -61,5 +59,24 @@ export class Css3DController {
 
   update = (camera: PerspectiveCamera) => {
     this.cssRenderer.render(this.cssScene, camera)
+  }
+
+  dispose = () => {
+    this.cssScene.traverse((child: any) => {
+      if (child.material) {
+        child.material.dispose()
+      }
+
+      if (child.geometry) {
+        child.geometry.dispose()
+      }
+
+      if (child.dispose) {
+        child.dispose()
+      }
+
+      child = null
+    })
+    this.cssScene.clear()
   }
 }
