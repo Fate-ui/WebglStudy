@@ -4,6 +4,7 @@ import glsl from 'vite-plugin-glsl'
 import { unocssPlugin } from './unocss'
 import { AutoRegistryComponents } from './component'
 import { AutoImportDeps } from './autoImport'
+import { ConfigSvgIconsPlugin } from './svgIcons'
 import type { PluginOption } from 'vite'
 
 export function createVitePlugins(): PluginOption[] {
@@ -17,6 +18,7 @@ export function createVitePlugins(): PluginOption[] {
     AutoRegistryComponents(),
     // 自动按需引入依赖
     AutoImportDeps(),
-    glsl()
+    glsl(),
+    ConfigSvgIconsPlugin()
   ]
 }

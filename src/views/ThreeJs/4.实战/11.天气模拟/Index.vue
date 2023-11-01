@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, shallowRef } from 'vue'
-import { AmbientLight, AnimationMixer, Clock, GridHelper, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
+import { AmbientLight, AnimationMixer, Clock, Color, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useRafFn } from '@vueuse/core'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import gsap from 'gsap'
 import { disposeThreeJs } from '@/utils'
 import ControlPanel from '@/views/ThreeJs/4.实战/11.天气模拟/ControlPanel.vue'
 import { size } from '@/views/ThreeJs/4.实战/11.天气模拟/utils'
@@ -22,9 +21,10 @@ onMounted(() => {
   containerRef.value.appendChild(renderer.domElement)
 })
 
-scene.add(new GridHelper(10))
-
 const controls = new OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true
+controls.maxDistance = 8
+controls.minDistance = 6
 
 /**
  * 加载模型
@@ -48,16 +48,10 @@ loader.load('/model/LittlestTokyo.glb', (gltf) => {
  * 添加光源
  * */
 // 环境光
-const ambientLight = new AmbientLight(0x666666, 3)
+const ambientLight = new AmbientLight(0x666666, 40)
 scene.add(ambientLight)
 
-// scene.background = new Color(0xbfe3dd)
-gsap.to(ambientLight, {
-  intensity: 60,
-  duration: 10,
-  yoyo: true,
-  repeat: -1
-})
+scene.background = new Color(0xbfe3dd)
 
 const clock = new Clock()
 const controlPanelRef = shallowRef<InstanceType<typeof ControlPanel>>()
