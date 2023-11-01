@@ -17,6 +17,7 @@ const defaultSize = {
   height: window.innerHeight,
   depth: 1200
 }
+
 const cubeSize = { ...defaultSize }
 const fov = 45
 let zAxis = 0

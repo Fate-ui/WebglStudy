@@ -110,9 +110,14 @@ onUnmounted(() => {
 
 <template>
   <div ref="containerRef" />
-  <div v-loading.fullscreen="loading" class="fixed left-20px top-20px">
+  <div class="fixed left-20px top-20px">
     <el-button type="primary" @click="playMusic">{{ isPlaying ? '暂停音乐' : '播放音乐' }}</el-button>
   </div>
+  <transition appear name="fade">
+    <div v-if="loading" class="loading-text fixed inset-0 grid place-items-center" text="120px">
+      {{ Math.floor(environmentController.loadingState.progress.value * 100) }}%
+    </div>
+  </transition>
   <transition appear name="fade">
     <Tip v-if="currentBoard" :title="currentBoard" />
   </transition>
@@ -127,5 +132,22 @@ onUnmounted(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+.loading-text {
+  text-shadow:
+    0 1px 0 hsl(174, 5%, 80%),
+    0 2px 0 hsl(174, 5%, 75%),
+    0 3px 0 hsl(174, 5%, 70%),
+    0 4px 0 hsl(174, 5%, 66%),
+    0 5px 0 hsl(174, 5%, 64%),
+    0 6px 0 hsl(174, 5%, 62%),
+    0 7px 0 hsl(174, 5%, 61%),
+    0 8px 0 hsl(174, 5%, 60%),
+    0 0 5px rgba(0, 0, 0, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 3px 5px rgba(0, 0, 0, 0.2),
+    0 5px 10px rgba(0, 0, 0, 0.2),
+    0 10px 10px rgba(0, 0, 0, 0.2),
+    0 20px 20px rgba(0, 0, 0, 0.3);
 }
 </style>

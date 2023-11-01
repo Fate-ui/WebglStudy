@@ -117,6 +117,11 @@ export const threeJsPages: RouteRecordRawExt[] = [
         path: '/threeJsTest/character',
         meta: { title: '角色运动' },
         component: () => import('@/views/ThreeJs/4.实战/10.角色移动/Index.vue')
+      },
+      {
+        path: '/threeJsTest/weather',
+        meta: { title: '天气模拟' },
+        component: () => import('@/views/ThreeJs/4.实战/11.天气模拟/Index.vue')
       }
     ]
   }
