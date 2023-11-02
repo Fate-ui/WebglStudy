@@ -22,9 +22,11 @@ onMounted(() => {
 })
 
 const controls = new OrbitControls(camera, renderer.domElement)
+controls.enablePan = false
 controls.enableDamping = true
 controls.maxDistance = 8
 controls.minDistance = 6
+controls.maxPolarAngle = Math.PI / 3
 
 /**
  * 加载模型

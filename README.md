@@ -6,3 +6,5 @@
 [Threejs实现下雨，下雪，阴天，晴天，火焰](https://blog.csdn.net/baidu_29701003/article/details/118805965)
 
 [3D Example List](https://github.com/dragonir/3d)
+
+[下雨特效](https://codepen.io/navin_moorthy/pen/qBWYORJ)

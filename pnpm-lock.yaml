@@ -37,6 +37,9 @@ dependencies:
     version: registry.npmmirror.com/vue-router@4.2.4(vue@3.3.4)
 
 devDependencies:
+  '@iconify-json/material-symbols':
+    specifier: ^1.1.61
+    version: registry.npmmirror.com/@iconify-json/material-symbols@1.1.61
   '@types/dat.gui':
     specifier: ^0.7.10
     version: registry.npmmirror.com/@types/dat.gui@0.7.10
@@ -570,6 +573,14 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz}
     name: '@humanwhocodes/object-schema'
     version: 1.2.1
+    dev: true
+
+  registry.npmmirror.com/@iconify-json/material-symbols@1.1.61:
+    resolution: {integrity: sha512-NbLHV5VF5MZsfydXvr4M/jCODjBHzOg3ctLMQ39yOtY7+VZgVkBuJiMlp3zKWcWPHIt1J3t0CLwVLZ9szyL8BA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@iconify-json/material-symbols/-/material-symbols-1.1.61.tgz}
+    name: '@iconify-json/material-symbols'
+    version: 1.1.61
+    dependencies:
+      '@iconify/types': registry.npmmirror.com/@iconify/types@2.0.0
     dev: true
 
   registry.npmmirror.com/@iconify/types@2.0.0:
