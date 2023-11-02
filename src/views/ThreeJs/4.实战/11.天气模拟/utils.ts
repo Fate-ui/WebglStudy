@@ -12,6 +12,7 @@ export class SnowController {
   img = snow
   mesh: Points
   vertices = []
+  offset = []
   data = reactive({
     particleLength: 1500
   })
@@ -23,14 +24,15 @@ export class SnowController {
   }
 
   generate = () => {
-    const { vertices, img, scene } = this
+    const { vertices, img, scene, offset } = this
     const geometry = new BufferGeometry()
     vertices.length = 0
     for (let i = 0; i < this.data.particleLength; i++) {
-      const x = MathUtils.randFloatSpread(20)
+      const x = MathUtils.randFloatSpread(15)
       const y = Math.random() * (size.height / scale)
-      const z = MathUtils.randFloat(-8, 8)
+      const z = MathUtils.randFloat(-6, 6)
       vertices.push(x, y, z)
+      offset.push((Math.random() - 0.5) / 70, 0, (Math.random() - 0.5) / 70)
     }
 
     // 生成粒子
@@ -55,11 +57,17 @@ export class SnowController {
 
   update = () => {
     if (!this.mesh) return
-    const { vertices } = this
+    const { vertices, offset } = this
     for (let i = 1; i < vertices.length; i += 3) {
       vertices[i] -= 0.01
+      vertices[i - 1] -= offset[i - 1]
+      vertices[i + 1] -= offset[i + 1]
       if (vertices[i] < 0) {
         vertices[i] = size.height / scale
+      }
+
+      if (vertices[i - 1] < -20 || vertices[i - 1] > 20) {
+        offset[i - 1] = -offset[i - 1]
       }
     }
 
