@@ -13,8 +13,8 @@ import {
   TextureLoader
 } from 'three'
 import { nodeFrame } from 'three/addons/renderers/webgl-legacy/nodes/WebGLNodes.js'
-import snow from 'texture/snow.png'
-import rain from 'texture/rain.png'
+import snow from '/texture/snow.png'
+import rain from '/texture/rain.png'
 import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry'
 import { PointsNodeMaterial, attribute, mix, pointUV, positionLocal, spritesheetUV, texture, timerLocal, uniform, vec2 } from 'three/nodes'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
