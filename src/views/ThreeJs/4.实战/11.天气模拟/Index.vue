@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, shallowRef } from 'vue'
-import { AmbientLight, AnimationMixer, Clock, Color, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
+import { AmbientLight, AnimationMixer, CircleGeometry, Clock, Mesh, MeshStandardMaterial, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useRafFn } from '@vueuse/core'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
+import * as THREE from 'three'
 import { disposeThreeJs } from '@/utils'
 import ControlPanel from '@/views/ThreeJs/4.实战/11.天气模拟/ControlPanel.vue'
-import { bg, size } from '@/views/ThreeJs/4.实战/11.天气模拟/utils'
+import { size } from '@/views/ThreeJs/4.实战/11.天气模拟/utils'
 
 const scene = new Scene()
 const camera = new PerspectiveCamera(75, size.width / size.height, 0.1, 1000)
-camera.position.set(3, 3, 3)
+camera.position.set(5, 3, 5)
 
 const renderer = new WebGLRenderer({ antialias: true })
 renderer.setSize(size.width, size.height)
@@ -22,29 +24,44 @@ onMounted(() => {
 })
 
 const controls = new OrbitControls(camera, renderer.domElement)
+controls.target.set(0, 1.5, 0)
 controls.enablePan = false
 controls.enableDamping = true
 controls.maxDistance = 8
 controls.minDistance = 6
-controls.maxPolarAngle = Math.PI / 3
+controls.maxPolarAngle = Math.PI / 2.1
 
 /**
  * 加载模型
  * */
+const loadingState = reactive({
+  progress: 0,
+  loadSuccess: false,
+  total: 2,
+  loadedCount: 0,
+  text: ''
+})
 const dracoLoader = new DRACOLoader()
 dracoLoader.setDecoderPath('/draco/')
 const loader = new GLTFLoader()
 loader.setDRACOLoader(dracoLoader)
 let mixer: AnimationMixer
-loader.load('/model/LittlestTokyo.glb', (gltf) => {
-  const model = gltf.scene
-  model.position.set(1, 2, 0)
-  model.scale.set(0.01, 0.01, 0.01)
-  scene.add(model)
-  mixer = new AnimationMixer(model)
-  mixer.clipAction(gltf.animations[0]).play()
-  console.log(gltf.scene)
-})
+loader.load(
+  '/model/LittlestTokyo.glb',
+  (gltf) => {
+    const model = gltf.scene
+    model.position.set(1, 2, 0)
+    model.scale.set(0.01, 0.01, 0.01)
+    scene.add(model)
+    mixer = new AnimationMixer(model)
+    mixer.clipAction(gltf.animations[0]).play()
+    loadingState.loadedCount++
+  },
+  (e) => {
+    loadingState.text = '模型加载中'
+    loadingState.progress = e.loaded / e.total
+  }
+)
 
 /**
  * 添加光源
@@ -53,11 +70,35 @@ loader.load('/model/LittlestTokyo.glb', (gltf) => {
 const ambientLight = new AmbientLight(0x666666, 40)
 scene.add(ambientLight)
 
-scene.background = bg
+/**
+ * 加载环境纹理
+ * */
+const rgbeLoader = new RGBELoader()
+rgbeLoader.load(
+  'textures/sky.hdr',
+  (texture) => {
+    texture.mapping = THREE.EquirectangularReflectionMapping
+    scene.environment = texture
+    scene.background = texture
+    loadingState.loadedCount++
+  },
+  (e) => {
+    loadingState.text = '环境纹理加载中'
+    loadingState.progress = e.loaded / e.total
+  }
+)
+
+/**
+ * 添加地面
+ * */
+const ground = new Mesh(new CircleGeometry(40, 60), new MeshStandardMaterial({ color: '#946737' }))
+ground.rotation.x = -Math.PI / 2
+scene.add(ground)
 
 const clock = new Clock()
 const controlPanelRef = shallowRef<InstanceType<typeof ControlPanel>>()
 useRafFn(() => {
+  if (loadingState.loadedCount < loadingState.total) return
   controls.update()
   const delta = clock.getDelta()
   mixer?.update(delta)
@@ -73,6 +114,16 @@ onUnmounted(() => {
 <template>
   <div ref="containerRef" />
   <ControlPanel ref="controlPanelRef" class="fixed top-0 left-0" :scene="scene" />
+  <div v-if="loadingState.loadedCount < loadingState.total" class="fixed z-9 inset-0 flex flex-col justify-center items-center bg-#eee">
+    <template v-if="loadingState.progress < 1">
+      <div text="20px" class="mb-70px">{{ loadingState.text }}.....</div>
+      <div class="loading-text" text="120px"> {{ Math.floor(loadingState.progress * 100) }}% </div>
+    </template>
+    <template v-else>
+      <div class="mb-20px">模型加载完成，页面准备中......</div>
+      <div class="loader" />
+    </template>
+  </div>
 </template>
 
 <style scoped lang="scss"></style>

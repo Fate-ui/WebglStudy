@@ -205,14 +205,14 @@ function moveCloud(cube: ReturnType<typeof addCloud>, routePoints: THREE.Vector3
   }
 }
 
-const orbitControl = new OrbitControls(camera, renderer.domElement)
+// const orbitControl = new OrbitControls(camera, renderer.domElement)
 
 function animate() {
   sphere.rotation.y += 0.008
   moveStar()
   cloudMoveFn()
   cloudMoveFn2()
-  orbitControl.update()
+  // orbitControl.update()
   renderer.render(scene, camera)
   requestAnimationFrame(animate)
 }

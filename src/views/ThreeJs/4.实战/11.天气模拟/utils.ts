@@ -18,7 +18,6 @@ import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry'
 import { PointsNodeMaterial, attribute, mix, pointUV, positionLocal, spritesheetUV, texture, timerLocal, uniform, vec2 } from 'three/nodes'
 import type { Scene } from 'three'
 
-export const bg = new Color(0xbfe3dd)
 export const size = { width: window.innerWidth, height: window.innerHeight }
 
 interface IWeather {
@@ -212,7 +211,6 @@ export class FlameController implements IWeather {
   generate = () => {
     const { scene } = this
 
-    scene.background = new Color('black')
     scene.fog = new FogExp2(0x000000, 0.001)
 
     const teapotGeometry = new TeapotGeometry(5 / scale, 7)
@@ -282,13 +280,13 @@ export class FlameController implements IWeather {
     material.positionNode = positionNode
 
     const particles = new Points(geometry, material)
-    particles.position.set(2, 1, 2.6)
+    particles.position.set(2, 1.5, 2.6)
     const particles2 = particles.clone()
-    particles2.position.set(-2, 1, 2.6)
+    particles2.position.set(-2, 1.5, 2.6)
     const particles3 = particles.clone()
-    particles3.position.set(2, 1, -2.6)
+    particles3.position.set(2, 1.5, -2.6)
     const particles4 = particles.clone()
-    particles4.position.set(-2, 1, -2.6)
+    particles4.position.set(-2, 1.5, -2.6)
     this.meshList.push(particles, particles2, particles3, particles4)
     this.scene.add(...this.meshList)
   }
@@ -298,7 +296,6 @@ export class FlameController implements IWeather {
   }
 
   destroy = () => {
-    this.scene.background = bg
     this.meshList.forEach((item) => {
       item.geometry.dispose()
       this.scene.remove(item)
