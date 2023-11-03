@@ -33,7 +33,7 @@ const orbitControl = new OrbitControls(camera, renderer.domElement)
 const wheels = []
 let carBody: THREE.Mesh<any, any, any>, frontCar: THREE.Mesh<any, any, any>, hoodCar: THREE.Mesh<any, any, any>, glassCar: THREE.Mesh<any, any, any>
 const dracoLoader = new DRACOLoader()
-dracoLoader.setDecoderPath('/draco/')
+dracoLoader.setDecoderPath('draco/')
 const loader = new GLTFLoader()
 loader.setDRACOLoader(dracoLoader)
 loader.load('model/car.glb', (gltf) => {

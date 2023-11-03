@@ -57,7 +57,7 @@ cube.geometry.scale(1, 1, -1)
  * */
 const sphereGeometry = new THREE.SphereGeometry(5, 32, 32)
 sphereGeometry.scale(1, 1, -1)
-const hdrTexture = new RGBELoader().load('/imgs/hdr/Living.hdr')
+const hdrTexture = new RGBELoader().load('imgs/hdr/Living.hdr')
 hdrTexture.colorSpace = THREE.SRGBColorSpace
 const sphere = new THREE.Mesh(sphereGeometry, new THREE.MeshBasicMaterial({ color: 0xffff00, map: hdrTexture }))
 scene.add(sphere)

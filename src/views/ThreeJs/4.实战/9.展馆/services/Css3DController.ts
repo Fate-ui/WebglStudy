@@ -44,7 +44,7 @@ export class Css3DController {
 
     const iframe = document.createElement('iframe')
     // iframe.src = 'https://scada.cunbodata.cn/#/running?id=1692053233307447298'
-    iframe.src = '/universe/index.html'
+    iframe.src = 'universe/index.html'
     iframe.style.width = '1200px'
     iframe.style.height = '900px'
     iframe.style.boxSizing = 'border-box'

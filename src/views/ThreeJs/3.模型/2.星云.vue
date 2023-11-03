@@ -2,11 +2,11 @@
 import { onMounted, shallowRef } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import earth from 'texture/earth.jpg'
+import star1 from 'texture/star1.png'
+import star2 from 'texture/star2.png'
+import cloud from 'texture/cloud.png'
 import starry from '@/assets/starry.png'
-import earth from '/public/texture/earth.jpg'
-import star1 from '/public/texture/star1.png'
-import star2 from '/public/texture/star2.png'
-import cloud from '/public/texture/cloud.png'
 
 const scene = new THREE.Scene()
 // 雾

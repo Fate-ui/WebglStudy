@@ -73,7 +73,7 @@ dracoLoader.setDecoderPath('draco/')
 dracoLoader.preload()
 const loader = new GLTFLoader()
 loader.setDRACOLoader(dracoLoader)
-loader.load('/model/building-min.glb', (gltf) => {
+loader.load('model/building-min.glb', (gltf) => {
   const model = gltf.scene
   model.scale.set(0.01, 0.01, 0.01)
   scene.add(model)

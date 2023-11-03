@@ -54,7 +54,7 @@ const loadingState = reactive({
   text: ''
 })
 const dracoLoader = new DRACOLoader()
-dracoLoader.setDecoderPath('/draco/')
+dracoLoader.setDecoderPath('draco/')
 const loader = new GLTFLoader()
 loader.setDRACOLoader(dracoLoader)
 let mixer: AnimationMixer
