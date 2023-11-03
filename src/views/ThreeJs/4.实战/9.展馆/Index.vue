@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, shallowRef } from 'vue'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry'
-import { ACESFilmicToneMapping, Clock, Mesh, MeshBasicMaterial, PerspectiveCamera, SRGBColorSpace, Scene, WebGLRenderer } from 'three'
+import { ACESFilmicToneMapping, Clock, Color, Mesh, MeshBasicMaterial, PerspectiveCamera, SRGBColorSpace, Scene, WebGLRenderer } from 'three'
 import type { Object3D, Object3DEventMap } from 'three'
 import { disposeThreeJs } from '@/utils'
 import { MoveController } from '@/views/ThreeJs/4.实战/9.展馆/services/MoveController'
@@ -15,6 +15,7 @@ import { Css3DController } from '@/views/ThreeJs/4.实战/9.展馆/services/Css3
 import { AudioController } from '@/views/ThreeJs/4.实战/9.展馆/services/AudioController'
 
 const scene = new Scene()
+scene.background = new Color(0xeeeeee)
 const camera = new PerspectiveCamera(55, canvasSize.width / canvasSize.height, 0.1, 1000)
 camera.position.set(0, 0, 3)
 
@@ -90,7 +91,10 @@ function onHideTip() {
   currentBoard.value = null
 }
 
-const loading = computed(() => environmentController.loadingState.progress.value < 1)
+const loading = computed(() => {
+  console.log(environmentController.loadingState.progress.value, environmentController.loadingState.progress.value < 1)
+  return environmentController.loadingState.progress.value < 1
+})
 
 /**
  * 详情展示
@@ -114,7 +118,7 @@ onUnmounted(() => {
     <el-button type="primary" @click="playMusic">{{ isPlaying ? '暂停音乐' : '播放音乐' }}</el-button>
   </div>
   <transition appear name="fade">
-    <div v-if="loading" class="loading-text fixed inset-0 grid place-items-center" text="120px">
+    <div v-if="loading" class="loading-text fixed z-9 inset-0 grid place-items-center" text="120px">
       {{ Math.floor(environmentController.loadingState.progress.value * 100) }}%
     </div>
   </transition>

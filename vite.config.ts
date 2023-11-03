@@ -15,6 +15,13 @@ export default defineConfig(({ mode }) => {
     plugins: createVitePlugins(),
     esbuild: {
       pure: ['console.log'] // 去除console.log
+    },
+    server: {
+      host: '0.0.0.0',
+      hmr: true,
+      open: false,
+      https: false,
+      proxy: {}
     }
   }
 })

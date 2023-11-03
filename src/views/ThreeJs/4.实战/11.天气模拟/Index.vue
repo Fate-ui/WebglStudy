@@ -7,7 +7,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { disposeThreeJs } from '@/utils'
 import ControlPanel from '@/views/ThreeJs/4.实战/11.天气模拟/ControlPanel.vue'
-import { size } from '@/views/ThreeJs/4.实战/11.天气模拟/utils'
+import { bg, size } from '@/views/ThreeJs/4.实战/11.天气模拟/utils'
 
 const scene = new Scene()
 const camera = new PerspectiveCamera(75, size.width / size.height, 0.1, 1000)
@@ -53,7 +53,7 @@ loader.load('/model/LittlestTokyo.glb', (gltf) => {
 const ambientLight = new AmbientLight(0x666666, 40)
 scene.add(ambientLight)
 
-scene.background = new Color(0xbfe3dd)
+scene.background = bg
 
 const clock = new Clock()
 const controlPanelRef = shallowRef<InstanceType<typeof ControlPanel>>()
