@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Scene } from 'three'
-import { FlameController, RainController, SnowController } from '@/views/ThreeJs/4.实战/11.天气模拟/utils'
+import { FlameController, RainController, SnowController, WeatherController } from '@/views/ThreeJs/4.实战/11.天气模拟/utils'
 
 const { scene } = defineProps<{ scene: Scene }>()
 
@@ -10,6 +10,7 @@ const rainController = new RainController(scene)
 // rainController.generate()
 const flameController = new FlameController(scene)
 flameController.generate()
+const weatherController = new WeatherController(scene)
 
 function update() {
   snowController.update()
@@ -71,6 +72,13 @@ defineExpose({ update })
         </div>
       </template>
     </el-dropdown>
+    <!--    天气切换-->
+    <el-select v-model="weatherController.weather.value" placeholder="Select" class="w-140px" @change="weatherController.change">
+      <el-option v-for="(value, key) in weatherController.items" :key="value" :label="key" :value="value" />
+    </el-select>
+    <div v-if="weatherController.loading.value" class="fixed inset-0 grid place-items-center bg-black/30">
+      <i class="loader-spinner text-20px ml-20px" />
+    </div>
   </div>
 </template>
 

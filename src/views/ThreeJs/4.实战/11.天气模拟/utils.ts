@@ -2,6 +2,7 @@ import {
   AdditiveBlending,
   BufferGeometry,
   Color,
+  EquirectangularReflectionMapping,
   Float32BufferAttribute,
   FogExp2,
   MathUtils,
@@ -16,9 +17,12 @@ import snow from '/texture/snow.png'
 import rain from '/texture/rain.png'
 import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry'
 import { PointsNodeMaterial, attribute, mix, pointUV, positionLocal, spritesheetUV, texture, timerLocal, uniform, vec2 } from 'three/nodes'
-import type { Scene } from 'three'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
+import type { DataTexture, Scene } from 'three'
 
 export const size = { width: window.innerWidth, height: window.innerHeight }
+export const weather = 'texture/sky2.hdr'
+export const rgbeLoader = new RGBELoader()
 
 interface IWeather {
   mesh: Points
@@ -104,7 +108,6 @@ export class SnowController implements IWeather {
   }
 
   destroy = () => {
-    this.mesh.geometry.dispose()
     this.scene.remove(this.mesh)
     this.mesh = null
   }
@@ -180,7 +183,6 @@ export class RainController implements IWeather {
   }
 
   destroy = () => {
-    this.mesh.geometry.dispose()
     this.scene.remove(this.mesh)
     this.mesh = null
   }
@@ -312,5 +314,43 @@ export class FlameController implements IWeather {
       this.destroy()
       this.generate()
     }
+  }
+}
+
+/**缓存环境纹理*/
+export const environmentTextures = new Map<Map<string, DataTexture>>()
+
+export class WeatherController {
+  weather = ref(weather)
+  loading = ref(false)
+  items = {
+    早晨: 'texture/sky.hdr',
+    黄昏: 'texture/sky2.hdr',
+    下午: 'texture/sky-afternoon.hdr',
+    正午: 'texture/sky-noon.hdr'
+  }
+  scene: Scene
+
+  constructor(scene: Scene) {
+    this.scene = scene
+  }
+
+  change = () => {
+    const { scene, loading, weather } = this
+    const texture = environmentTextures.get(weather.value)
+    if (texture) {
+      scene.environment = texture
+      scene.background = texture
+      return
+    }
+
+    loading.value = true
+    rgbeLoader.load(this.weather.value, (texture) => {
+      texture.mapping = EquirectangularReflectionMapping
+      scene.environment = texture
+      scene.background = texture
+      environmentTextures.set(this.weather.value, texture)
+      loading.value = false
+    })
   }
 }

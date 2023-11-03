@@ -104,3 +104,25 @@ ul {
     0 10px 10px rgba(0, 0, 0, 0.2),
     0 20px 20px rgba(0, 0, 0, 0.3);
 }
+
+.loader-spinner {
+  --d: 1em;
+  width: 0.182em;
+  height: 0.182em;
+  border-radius: 50%;
+  color: #25b09b;
+  box-shadow:
+    calc(1 * var(--d)) calc(0 * var(--d)) 0 0,
+    calc(0.707 * var(--d)) calc(0.707 * var(--d)) 0 1px,
+    calc(0 * var(--d)) calc(1 * var(--d)) 0 0.091em,
+    calc(-0.707 * var(--d)) calc(0.707 * var(--d)) 0 0.136em,
+    calc(-1 * var(--d)) calc(0 * var(--d)) 0 0.182em,
+    calc(-0.707 * var(--d)) calc(-0.707 * var(--d)) 0 0.22em,
+    calc(0 * var(--d)) calc(-1 * var(--d)) 0 0.23em;
+  animation: l27 1s infinite steps(8);
+}
+@keyframes l27 {
+  100% {
+    transform: rotate(1turn);
+  }
+}
