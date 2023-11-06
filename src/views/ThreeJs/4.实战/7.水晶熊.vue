@@ -3,6 +3,7 @@ import { onMounted, shallowRef } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { useRafFn } from '@vueuse/core'
 import { disposeThreeJs } from '@/utils'
 
 const size = {
@@ -24,13 +25,11 @@ onMounted(() => {
 })
 
 const orbitControl = new OrbitControls(camera, renderer.domElement)
-function animate() {
-  requestAnimationFrame(animate)
+
+useRafFn(() => {
   renderer.render(scene, camera)
   orbitControl.update()
-}
-
-animate()
+})
 
 /**
  * 加载场景纹理

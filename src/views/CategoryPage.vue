@@ -5,7 +5,6 @@ import type { RouteRecordRawExt } from '@/router'
 
 const route = useRoute()
 const pages = computed(() => route.matched[0].meta.children as RouteRecordRawExt[])
-console.log(pages.value)
 </script>
 <template>
   <div class="flex flex-col gap-y-4 p-10">

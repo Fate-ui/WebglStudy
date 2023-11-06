@@ -7,7 +7,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
 import { Water } from 'three/examples/jsm/objects/Water2'
 import gsap from 'gsap'
-import { useEventListener, useThrottleFn } from '@vueuse/core'
+import { useEventListener, useRafFn, useThrottleFn } from '@vueuse/core'
 import { disposeThreeJs } from '@/utils'
 
 const size = {
@@ -276,7 +276,6 @@ orbitControl.enableZoom = false
 let angle = 0
 function animate() {
   angle += 0.5
-  requestAnimationFrame(animate)
   orbitControl.update()
   renderer.render(scene, camera)
   pointLightGroup.rotation.y += 0.1
@@ -285,7 +284,7 @@ function animate() {
   })
 }
 
-animate()
+useRafFn(animate)
 
 /**
  * 缩放
