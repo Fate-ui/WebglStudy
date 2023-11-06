@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Scene } from 'three'
-import { FlameController, RainController, SnowController, WeatherController } from '@/views/ThreeJs/4.实战/11.天气模拟/utils'
+import { FlameController, FogController, RainController, SnowController, WeatherController } from '@/views/ThreeJs/4.实战/11.天气模拟/utils'
 
 const { scene } = defineProps<{ scene: Scene }>()
 
@@ -11,6 +11,7 @@ const rainController = new RainController(scene)
 const flameController = new FlameController(scene)
 flameController.generate()
 const weatherController = new WeatherController(scene)
+const fogController = new FogController(scene, flameController)
 
 function update() {
   snowController.update()
@@ -18,6 +19,7 @@ function update() {
   flameController.update()
 }
 
+// scene.fog = new Fog(0xffffff, 0.01, 2000)
 onUnmounted(() => {
   snowController.destroy()
   rainController.destroy()
@@ -79,6 +81,10 @@ defineExpose({ update })
     <div v-if="weatherController.loading.value" class="fixed inset-0 grid place-items-center bg-black/30">
       <i class="loader-spinner text-20px ml-20px" />
     </div>
+    <!--    雾-->
+    <el-tooltip content="雾">
+      <i class="i-material-symbols:foggy-outline cursor-pointer ml-20px" text="26px" :class="{ 'text-blue': !!scene.fog }" @click="fogController.toggle()" />
+    </el-tooltip>
   </div>
 </template>
 

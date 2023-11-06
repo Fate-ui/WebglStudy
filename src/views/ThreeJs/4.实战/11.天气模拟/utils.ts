@@ -1,7 +1,6 @@
 import {
   AdditiveBlending,
   BufferGeometry,
-  Color,
   EquirectangularReflectionMapping,
   Float32BufferAttribute,
   FogExp2,
@@ -18,7 +17,7 @@ import rain from '/texture/rain.png'
 import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry'
 import { PointsNodeMaterial, attribute, mix, pointUV, positionLocal, spritesheetUV, texture, timerLocal, uniform, vec2 } from 'three/nodes'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
-import type { DataTexture, Scene } from 'three'
+import type { DataTexture, Scene, Scene } from 'three'
 
 export const size = { width: window.innerWidth, height: window.innerHeight }
 export const weather = 'texture/sky2.hdr'
@@ -29,9 +28,9 @@ interface IWeather {
   vertices: number[]
   offset: number[]
   data: {
-    particleLength: number
+    particleCount: number
   }
-  scene: Scene
+  readonly scene: Scene
   generate: () => void
   update: () => void
   destroy: () => void
@@ -211,10 +210,6 @@ export class FlameController implements IWeather {
   }
 
   generate = () => {
-    const { scene } = this
-
-    scene.fog = new FogExp2(0x000000, 0.001)
-
     const teapotGeometry = new TeapotGeometry(5 / scale, 7)
     const sphereGeometry = new SphereGeometry(5 / scale, 13, 1.6)
 
@@ -352,5 +347,31 @@ export class WeatherController {
       environmentTextures.set(this.weather.value, texture)
       loading.value = false
     })
+  }
+}
+
+export class FogController {
+  scene: Scene
+  flameController: FlameController
+
+  constructor(scene: Scene, flameController: FlameController) {
+    this.scene = scene
+    this.flameController = flameController
+  }
+
+  generate = () => {
+    const { scene, flameController } = this
+    scene.fog = new FogExp2(0xcccccc, 0.08)
+    flameController.destroy()
+  }
+
+  destroy = () => {
+    const { scene } = this
+    scene.fog = null
+  }
+
+  toggle = () => {
+    const { scene } = this
+    scene.fog ? this.destroy() : this.generate()
   }
 }
