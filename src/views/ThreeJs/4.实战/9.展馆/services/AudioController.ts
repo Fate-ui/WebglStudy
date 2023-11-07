@@ -23,16 +23,13 @@ export class AudioController {
 
     // load a sound and set it as the PositionalAudio object's buffer
     const audioLoader = new AudioLoader()
-    audioLoader.load(
-      'https://ws.stream.qqmusic.qq.com/C400002b58Uc1ujQre.m4a?guid=637115780&vkey=F118885DF2C776D7264A09A3DC8DE223CE1C6EBA576444DF495A7B1122AB746DD97A7A8F8B9AF11434631F0606D24DD2D0AA2D1738D8A813&uin=&fromtag=120032',
-      (buffer) => {
-        sound.setBuffer(buffer)
-        // sound.setVolume(0.8)
-        sound.setRefDistance(20)
-        sound.setDirectionalCone(180, 230, 0.5)
-        sound.setLoop(true)
-      }
-    )
+    audioLoader.load('虔心悲切遥呼上师祈请文.mp3', (buffer) => {
+      sound.setBuffer(buffer)
+      // sound.setVolume(0.8)
+      sound.setRefDistance(20)
+      sound.setDirectionalCone(180, 230, 0.5)
+      sound.setLoop(true)
+    })
 
     // create an object for the sound to play from
     const mesh = new Mesh(new PlaneGeometry(1, 1), new MeshBasicMaterial({ color: 0xff0000 }))

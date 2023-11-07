@@ -8,7 +8,7 @@ import { disposeThreeJs } from '@/utils'
 import { MoveController } from '@/views/ThreeJs/4.实战/9.展馆/services/MoveController'
 import { EnvironmentController, collider } from '@/views/ThreeJs/4.实战/9.展馆/services/environmentController'
 import { canvasSize } from '@/views/ThreeJs/4.实战/9.展馆/Index'
-import { RayCasterController } from '@/views/ThreeJs/4.实战/9.展馆/services/RayCasterController'
+import { RayCasterController, isOnComputer } from '@/views/ThreeJs/4.实战/9.展馆/services/RayCasterController'
 import Tip from '@/views/ThreeJs/4.实战/9.展馆/components/Tip.vue'
 import Detail from '@/views/ThreeJs/4.实战/9.展馆/components/Detail.vue'
 import { Css3DController } from '@/views/ThreeJs/4.实战/9.展馆/services/Css3DController'
@@ -19,7 +19,7 @@ scene.background = new Color(0xeeeeee)
 const camera = new PerspectiveCamera(55, canvasSize.width / canvasSize.height, 0.1, 1000)
 camera.position.set(0, 0, 3)
 
-const renderer = new WebGLRenderer({ antialias: true })
+const renderer = new WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true })
 renderer.setSize(canvasSize.width, canvasSize.height)
 renderer.setPixelRatio(window.devicePixelRatio)
 renderer.shadowMap.enabled = true
@@ -29,7 +29,14 @@ const containerRef = shallowRef<HTMLElement>()
 onMounted(() => {
   containerRef.value.appendChild(renderer.domElement)
 })
+
+/**
+ * css3d
+ * */
+const css3DController = new Css3DController(scene)
+
 const controls = new OrbitControls(camera, renderer.domElement)
+// const controls = new OrbitControls(camera, css3DController.cssRenderer.domElement)
 controls.minDistance = 1e-4
 controls.maxDistance = 1e-4
 
@@ -49,11 +56,6 @@ watch(environmentController.loaded, (loaded) => {
 const character = new Mesh(new RoundedBoxGeometry(0.5, 2.5, 0.5, 10, 1), new MeshBasicMaterial({ color: 0x0000ff }))
 character.geometry.translate(0, -0.25, 0)
 scene.add(character)
-
-/**
- * css3d
- * */
-const css3DController = new Css3DController(scene)
 
 /**
  * 角色移动
@@ -92,7 +94,6 @@ function onHideTip() {
 }
 
 const loading = computed(() => {
-  console.log(environmentController.loadingState.progress.value, environmentController.loadingState.progress.value < 1)
   return environmentController.loadingState.progress.value < 1
 })
 
@@ -113,12 +114,12 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="containerRef" />
-  <div class="fixed left-20px top-20px">
+  <div id="webgl" ref="containerRef" class="relative z-1" :class="{ 'pointer-events-none': isOnComputer }" />
+  <div class="fixed left-20px top-20px z-11">
     <el-button type="primary" @click="playMusic">{{ isPlaying ? '暂停音乐' : '播放音乐' }}</el-button>
   </div>
   <transition appear name="fade">
-    <div v-if="loading" class="loading-text fixed z-9 inset-0 grid place-items-center" text="120px">
+    <div v-if="loading" class="loading-text fixed z-11 inset-0 grid place-items-center" text="120px">
       {{ Math.floor(environmentController.loadingState.progress.value * 100) }}%
     </div>
   </transition>

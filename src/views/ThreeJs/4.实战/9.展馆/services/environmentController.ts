@@ -1,5 +1,5 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { Box3, Light, Mesh, PlaneGeometry, SRGBColorSpace, ShaderMaterial, TextureLoader, Vector3 } from 'three'
+import { Light, Mesh, PlaneGeometry, SRGBColorSpace, ShaderMaterial, TextureLoader } from 'three'
 import { Reflector } from 'three/examples/jsm/objects/Reflector'
 import { MeshBVH, StaticGeometryGenerator } from 'three-mesh-bvh'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'

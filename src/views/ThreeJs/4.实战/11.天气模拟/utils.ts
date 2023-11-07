@@ -17,7 +17,7 @@ import rain from '/texture/rain.png'
 import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry'
 import { PointsNodeMaterial, attribute, mix, pointUV, positionLocal, spritesheetUV, texture, timerLocal, uniform, vec2 } from 'three/nodes'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
-import type { DataTexture, Scene, Scene } from 'three'
+import type { DataTexture, Scene } from 'three'
 
 export const size = { width: window.innerWidth, height: window.innerHeight }
 export const weather = 'texture/sky2.hdr'
@@ -322,7 +322,8 @@ export class WeatherController {
     早晨: 'texture/sky.hdr',
     黄昏: 'texture/sky2.hdr',
     下午: 'texture/sky-afternoon.hdr',
-    正午: 'texture/sky-noon.hdr'
+    正午: 'texture/sky-noon.hdr',
+    多云: 'texture/sky-cloudy.hdr'
   }
   scene: Scene
 

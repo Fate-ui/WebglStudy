@@ -4,10 +4,11 @@ import { useEventListener } from '@vueuse/core'
 import type { PerspectiveCamera } from 'three'
 import { canvasSize } from '@/views/ThreeJs/4.实战/9.展馆/Index'
 
+export const computer = ref<Mesh>()
 export class Css3DController {
   private cssScene: Scene
   private scene: Scene
-  private cssRenderer: CSS3DRenderer
+  cssRenderer: CSS3DRenderer
 
   constructor(scene: Scene) {
     this.cssScene = new Scene()
@@ -24,7 +25,7 @@ export class Css3DController {
     cssRenderer.setSize(canvasSize.width, canvasSize.height)
     cssRenderer.domElement.style.position = 'absolute'
     cssRenderer.domElement.style.top = '0px'
-    cssRenderer.domElement.style.zIndex = '-1'
+    // cssRenderer.domElement.style.zIndex = '9'
     document.body.appendChild(cssRenderer.domElement)
   }
 
@@ -44,9 +45,10 @@ export class Css3DController {
 
     const iframe = document.createElement('iframe')
     // iframe.src = 'https://scada.cunbodata.cn/#/running?id=1692053233307447298'
-    iframe.src = 'universe/index.html'
-    iframe.style.width = '1200px'
-    iframe.style.height = '900px'
+    iframe.src = 'https://www.bilibili.com/'
+    // iframe.src = 'universe/index.html'
+    iframe.style.width = '730px'
+    iframe.style.height = '500px'
     iframe.style.boxSizing = 'border-box'
     iframe.style.opacity = '1'
 
@@ -54,6 +56,7 @@ export class Css3DController {
     object.position.copy(mesh.position)
     object.rotation.copy(mesh.rotation)
     object.scale.set(0.002, 0.002, 0.002)
+    computer.value = mesh
     this.cssScene.add(object)
   }
 
