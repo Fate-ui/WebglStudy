@@ -24,11 +24,11 @@ dependencies:
     specifier: ^2.1.6
     version: registry.npmmirror.com/pinia@2.1.6(typescript@5.2.2)(vue@3.3.4)
   three:
-    specifier: 0.157.0
-    version: registry.npmmirror.com/three@0.157.0
+    specifier: 0.158.0
+    version: registry.npmmirror.com/three@0.158.0
   three-mesh-bvh:
     specifier: 0.6.3
-    version: registry.npmmirror.com/three-mesh-bvh@0.6.3(three@0.157.0)
+    version: registry.npmmirror.com/three-mesh-bvh@0.6.3(three@0.158.0)
   vue:
     specifier: ^3.3.4
     version: registry.npmmirror.com/vue@3.3.4
@@ -5686,7 +5686,7 @@ packages:
     version: 0.2.0
     dev: true
 
-  registry.npmmirror.com/three-mesh-bvh@0.6.3(three@0.157.0):
+  registry.npmmirror.com/three-mesh-bvh@0.6.3(three@0.158.0):
     resolution: {integrity: sha512-xjuGLSI9nBATIsWcT/DnnNma5xXYyvBiXfUbhGLAFqItOlOKYF5JWsUOX+cuSAnSWovEoHzd5Emx23qKiByrlw==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/three-mesh-bvh/-/three-mesh-bvh-0.6.3.tgz}
     id: registry.npmmirror.com/three-mesh-bvh/0.6.3
     name: three-mesh-bvh
@@ -5694,13 +5694,13 @@ packages:
     peerDependencies:
       three: '>= 0.151.0'
     dependencies:
-      three: registry.npmmirror.com/three@0.157.0
+      three: registry.npmmirror.com/three@0.158.0
     dev: false
 
-  registry.npmmirror.com/three@0.157.0:
-    resolution: {integrity: sha512-CeAwQrf4x3z0/e+MC4F+nXLW5t0gh3pw+L6CCBqpHvOq3bGYIgRYub7Pv0j/9wR+d++OiEglyZzWyuSYbwWGOA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/three/-/three-0.157.0.tgz}
+  registry.npmmirror.com/three@0.158.0:
+    resolution: {integrity: sha512-TALj4EOpdDPF1henk2Q+s17K61uEAAWQ7TJB68nr7FKxqwyDr3msOt5IWdbGm4TaWKjrtWS8DJJWe9JnvsWOhQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/three/-/three-0.158.0.tgz}
     name: three
-    version: 0.157.0
+    version: 0.158.0
     dev: false
 
   registry.npmmirror.com/titleize@3.0.0:
