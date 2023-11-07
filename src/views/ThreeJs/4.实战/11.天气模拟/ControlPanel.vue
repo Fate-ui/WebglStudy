@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Scene } from 'three'
-import { FlameController, FogController, RainController, SnowController, WeatherController } from '@/views/ThreeJs/4.实战/11.天气模拟/utils'
+import { FlameController, FogController, RainController, SmokeController, SnowController, WeatherController } from '@/views/ThreeJs/4.实战/11.天气模拟/utils'
 
 const { scene } = defineProps<{ scene: Scene }>()
 
@@ -12,17 +12,21 @@ const flameController = new FlameController(scene)
 flameController.generate()
 const weatherController = new WeatherController(scene)
 const fogController = new FogController(scene, flameController)
+const smokeController = new SmokeController(scene)
+smokeController.generate()
 
 function update() {
   snowController.update()
   rainController.update()
   flameController.update()
+  smokeController.update()
 }
 
 // scene.fog = new Fog(0xffffff, 0.01, 2000)
 onUnmounted(() => {
   snowController.destroy()
   rainController.destroy()
+  flameController.destroy()
 })
 
 defineExpose({ update })
@@ -84,6 +88,15 @@ defineExpose({ update })
     <!--    雾-->
     <el-tooltip content="雾">
       <i class="i-material-symbols:foggy-outline cursor-pointer ml-20px" text="26px" :class="{ 'text-blue': !!scene.fog }" @click="fogController.toggle()" />
+    </el-tooltip>
+    <!--    炊烟效果-->
+    <el-tooltip content="炊烟">
+      <SvgIcon
+        name="smoke"
+        class="text-26px cursor-pointer outline-none mx-20px"
+        :class="{ 'text-blue': !!smokeController.entity }"
+        @click="smokeController.toggle()"
+      />
     </el-tooltip>
   </div>
 </template>

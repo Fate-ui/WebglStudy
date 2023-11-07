@@ -8,3 +8,5 @@
 [3D Example List](https://github.com/dragonir/3d)
 
 [下雨特效](https://codepen.io/navin_moorthy/pen/qBWYORJ)
+
+[threejs 3d开发](https://gitee.com/superzay/threejs-animate)

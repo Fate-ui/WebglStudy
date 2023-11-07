@@ -1,5 +1,6 @@
 import {
   AdditiveBlending,
+  BufferAttribute,
   BufferGeometry,
   EquirectangularReflectionMapping,
   Float32BufferAttribute,
@@ -17,7 +18,7 @@ import rain from '/texture/rain.png'
 import { TeapotGeometry } from 'three/examples/jsm/geometries/TeapotGeometry'
 import { PointsNodeMaterial, attribute, mix, pointUV, positionLocal, spritesheetUV, texture, timerLocal, uniform, vec2 } from 'three/nodes'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
-import type { DataTexture, Scene } from 'three'
+import type { DataTexture, Scene, Shader } from 'three'
 
 export const size = { width: window.innerWidth, height: window.innerHeight }
 export const weather = 'texture/sky2.hdr'
@@ -374,5 +375,185 @@ export class FogController {
   toggle = () => {
     const { scene } = this
     scene.fog ? this.destroy() : this.generate()
+  }
+}
+
+class Particle {
+  range: number
+  center: { x: number; y: number; z: number }
+  life: number
+  createTime: number
+  updateTime: number
+  size: number
+  opacityFactor: number
+  opacity: number
+  scaleFactor: number
+  scale: number
+  position: { x: number; y: number; z: number }
+  speed: { x: number; y: number; z: number }
+
+  constructor(range = 10, center = { x: 0, y: 0, z: 0 }) {
+    const scale = 8000
+    this.range = range // 粒子的分布半径
+    this.center = center // 粒子的分布中心
+    this.life = 5000 // 粒子的存活时间，毫秒
+    this.createTime = Date.now() // 粒子创建时间
+    this.updateTime = Date.now() // 上次更新时间
+    this.size = 1 // 粒子大小
+
+    // 粒子透明度，及系数
+    this.opacityFactor = 0.4
+    this.opacity = this.opacityFactor
+
+    // 粒子放大量，及放大系数
+    this.scaleFactor = 2
+    this.scale = 1 + (this.scaleFactor * (this.updateTime - this.createTime)) / this.life // 初始1，到达生命周期时为3
+
+    // 粒子位置
+    this.position = {
+      x: (Math.random() * 2 * this.range + this.center.x - this.range) / scale,
+      y: this.center.y / scale,
+      z: (Math.random() * 2 * this.range + this.center.z - this.range) / scale
+    }
+
+    // 水平方向的扩散
+    let speedAround = Math.random() * 40
+    if (speedAround < 20) speedAround -= 50
+    if (speedAround > 20) speedAround += 10
+
+    // 粒子的扩散速度
+    this.speed = {
+      x: speedAround / 500,
+      y: (Math.random() * 100 + 300) / 500,
+      z: speedAround / 500
+    }
+  }
+
+  // 更新粒子
+  update() {
+    const now = Date.now()
+    const time = now - this.updateTime
+
+    // 更新位置
+    this.position.x += (this.speed.x * time) / 1000
+    this.position.y += (this.speed.y * time) / 1000
+    this.position.z += (this.speed.z * time) / 1000
+
+    // 计算粒子透明度
+    this.opacity = 1 - (now - this.createTime) / this.life
+    this.opacity *= this.opacityFactor
+    if (this.opacity < 0) this.opacity = 0
+
+    // 计算放大量
+    this.scale = 1 + (this.scaleFactor * (now - this.createTime)) / this.life
+    if (this.scale > 1 + this.scaleFactor) this.scale = 1 + this.scaleFactor
+
+    // 重置更新时间
+    this.updateTime = now
+  }
+}
+
+export class SmokeController {
+  private scene: Scene
+
+  particles: Particle[] = []
+
+  entity: Points
+
+  constructor(scene: Scene) {
+    this.scene = scene
+  }
+
+  generate = async () => {
+    const { scene } = this
+    const geometry = new BufferGeometry()
+    geometry.setAttribute('position', new BufferAttribute(new Float32Array([]), 3)) // 一个顶点由3个坐标构成
+    geometry.setAttribute('a_opacity', new BufferAttribute(new Float32Array([]), 1)) // 点的透明度，用1个浮点数表示
+    geometry.setAttribute('a_size', new BufferAttribute(new Float32Array([]), 1)) // 点的初始大小，用1个浮点数表示
+    geometry.setAttribute('a_scale', new BufferAttribute(new Float32Array([]), 1)) // 点的放大量，用1个浮点数表示
+
+    const texture = await textureLoader.loadAsync('texture/smoke-texture.png')
+    const material = new PointsMaterial({
+      size: 0.01,
+      map: texture,
+      color: '#666',
+      transparent: true,
+      depthWrite: false
+    })
+    material.onBeforeCompile = this.#onBeforeCompile
+    const points = new Points(geometry, material)
+    points.position.set(3, 3, 2.6)
+    this.entity = points
+    scene.add(points)
+    console.log(texture)
+
+    setInterval(() => {
+      this.particles.push(new Particle(10, { x: 0, y: 100, z: 0 }))
+    }, 500)
+  }
+
+  destroy = () => {
+    this.scene.remove(this.entity)
+    this.entity = null
+  }
+
+  toggle = () => {
+    this.entity ? this.destroy() : this.generate()
+  }
+
+  update = () => {
+    if (!this.entity) return
+    this.particles = this.particles.filter((particle) => {
+      particle.update()
+      return particle.updateTime - particle.createTime <= particle.life
+    })
+    console.log(this.particles)
+    if (!this.particles.length) return
+
+    // 遍历粒子,收集属性
+    const positionList = []
+    const opacityList = []
+    const scaleList = []
+    const sizeList = []
+    this.particles.forEach((particle) => {
+      const { x, y, z } = particle.position
+      positionList.push(x, y, z)
+      opacityList.push(particle.opacity)
+      scaleList.push(particle.scale)
+      sizeList.push(particle.size)
+    })
+
+    // 粒子属性写入
+    const geometry = this.entity.geometry
+    geometry.setAttribute('position', new BufferAttribute(new Float32Array(positionList), 3))
+    geometry.setAttribute('a_opacity', new BufferAttribute(new Float32Array(opacityList), 1))
+    geometry.setAttribute('a_scale', new BufferAttribute(new Float32Array(scaleList), 1))
+    geometry.setAttribute('a_size', new BufferAttribute(new Float32Array(sizeList), 1))
+  }
+
+  #onBeforeCompile = (shader: Shader) => {
+    const vertexShader_attribute = `
+        attribute float a_opacity;
+        attribute float a_size;
+        attribute float a_scale;
+        varying float v_opacity;
+        void main() {
+          v_opacity = a_opacity;
+        `
+    const vertexShader_size = `
+        gl_PointSize = a_size * a_scale;
+        `
+    shader.vertexShader = shader.vertexShader.replace('void main() {', vertexShader_attribute)
+    shader.vertexShader = shader.vertexShader.replace('gl_PointSize = size;', vertexShader_size)
+
+    const fragmentShader_varying = `
+        varying float v_opacity;
+        void main() {
+      `
+    const fragmentShader_opacity = `
+        gl_FragColor = vec4( outgoingLight, diffuseColor.a * v_opacity );
+      `
+    shader.fragmentShader = shader.fragmentShader.replace('void main() {', fragmentShader_varying)
+    shader.fragmentShader = shader.fragmentShader.replace('gl_FragColor = vec4( outgoingLight, diffuseColor.a );', fragmentShader_opacity)
   }
 }
