@@ -127,6 +127,11 @@ export const threeJsPages: RouteRecordRawExt[] = [
         path: '/threeJsTest/interactiveWebpage',
         meta: { title: '嵌入可交互网页' },
         component: () => import('@/views/ThreeJs/4.实战/15.嵌入可交互网页.vue')
+      },
+      {
+        path: '/threeJsTest/flyLine',
+        meta: { title: '飞线' },
+        component: () => import('@/views/ThreeJs/4.实战/17.飞线/Index.vue')
       }
     ]
   }
