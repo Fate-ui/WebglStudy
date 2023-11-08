@@ -134,9 +134,14 @@ export const threeJsPages: RouteRecordRawExt[] = [
         component: () => import('@/views/ThreeJs/4.实战/17.飞线/Index.vue')
       },
       {
-        path: '/threeJsTest/curtain',
+        path: '/threeJsTest/lightCurtain',
         meta: { title: '光幕' },
         component: () => import('@/views/ThreeJs/4.实战/18.光幕/Index.vue')
+      },
+      {
+        path: '/threeJsTest/radarScan',
+        meta: { title: '雷达扫描' },
+        component: () => import('@/views/ThreeJs/4.实战/19.雷达扫描/Index.vue')
       }
     ]
   }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, shallowRef } from 'vue'
-import { AmbientLight, Color, DirectionalLight, LinearSRGBColorSpace, NoColorSpace, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
+import { AmbientLight, Color, DirectionalLight, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useRafFn } from '@vueuse/core'
 import City from './city.js'
@@ -23,6 +23,7 @@ onMounted(() => {
 })
 
 const controls = new OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true
 
 /**
  * 光
