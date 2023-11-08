@@ -132,6 +132,11 @@ export const threeJsPages: RouteRecordRawExt[] = [
         path: '/threeJsTest/flyLine',
         meta: { title: '飞线' },
         component: () => import('@/views/ThreeJs/4.实战/17.飞线/Index.vue')
+      },
+      {
+        path: '/threeJsTest/curtain',
+        meta: { title: '光幕' },
+        component: () => import('@/views/ThreeJs/4.实战/18.光幕/Index.vue')
       }
     ]
   }
