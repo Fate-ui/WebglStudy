@@ -168,7 +168,7 @@ class City {
       `
 
       const fragementColor = `
-
+        #include <opaque_fragment>
         
 
         // length内置函数，取向量的长度
