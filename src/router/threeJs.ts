@@ -152,6 +152,11 @@ export const threeJsPages: RouteRecordRawExt[] = [
         path: '/threeJsTest/ModelGrow',
         meta: { title: '模型生长动画' },
         component: () => import('@/views/ThreeJs/4.实战/21.模型生长动画/Index.vue')
+      },
+      {
+        path: '/threeJsTest/flowLight',
+        meta: { title: '流光' },
+        component: () => import('@/views/ThreeJs/4.实战/22.流光.vue')
       }
     ]
   }
