@@ -142,6 +142,11 @@ export const threeJsPages: RouteRecordRawExt[] = [
         path: '/threeJsTest/radarScan',
         meta: { title: '雷达扫描' },
         component: () => import('@/views/ThreeJs/4.实战/19.雷达扫描/Index.vue')
+      },
+      {
+        path: '/threeJsTest/ModelBoundingLine',
+        meta: { title: '模型包围线' },
+        component: () => import('@/views/ThreeJs/4.实战/20.模型包围线/Index.vue')
       }
     ]
   }
