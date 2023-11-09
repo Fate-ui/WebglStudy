@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
-import { useRafFn } from '@vueuse/core'
 
 // 定义城市类City，并输出
 class City {
@@ -195,7 +194,6 @@ class City {
       shader.fragmentShader = shader.fragmentShader.replace('void main() {', fragment)
       // shader.fragmentShader = shader.fragmentShader.replace('gl_FragColor = vec4( outgoingLight, diffuseColor.a );', fragementColor)
       shader.fragmentShader = shader.fragmentShader.replace('#include <opaque_fragment>', fragementColor)
-      console.log(shader.fragmentShader)
     }
   }
   // 数据更新
