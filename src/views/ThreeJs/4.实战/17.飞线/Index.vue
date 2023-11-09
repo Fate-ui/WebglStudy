@@ -48,6 +48,10 @@ onUnmounted(() => {
 
 <template>
   <div ref="containerRef" />
+  <div class="fixed left-20px top-20px px-20px leading-50px z-1 bg-white rounded">
+    <span>学习来源：</span>
+    <a href="https://gitee.com/superzay/threejs-animate" target="_blank" class="text-blue">threejs 3d开发</a>
+  </div>
 </template>
 
 <style scoped lang="scss"></style>

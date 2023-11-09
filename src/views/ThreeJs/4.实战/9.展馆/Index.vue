@@ -127,6 +127,10 @@ onUnmounted(() => {
     <Tip v-if="currentBoard" :title="currentBoard" />
   </transition>
   <el-dialog v-model="showDetail" width="70vw" class="!bg-black !rounded-20px"> <Detail :data="boardData" /> </el-dialog>
+  <div class="fixed right-20px top-20px px-20px leading-50px z-1 bg-white rounded">
+    <span>学习来源：</span>
+    <a href="https://github.com/Steve245270533/gallery" target="_blank" class="text-blue">gallery</a>
+  </div>
 </template>
 
 <style scoped lang="scss">
