@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, shallowRef } from 'vue'
-import { GridHelper, Group, PerspectiveCamera, Scene } from 'three'
+import { AmbientLight, GridHelper, Group, PerspectiveCamera, Scene } from 'three'
 import { CSS3DObject, CSS3DRenderer } from 'three/addons/renderers/CSS3DRenderer.js'
 import { useRafFn } from '@vueuse/core'
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { disposeThreeJs } from '@/utils'
 
 const size = { width: window.innerWidth, height: window.innerHeight }

@@ -4,6 +4,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+import { AmbientLight } from 'three'
 
 /**
  * 加载模型
@@ -109,6 +110,19 @@ meshFloor.receiveShadow = true
 // scene.add(meshFloor)
 
 const orbitControl = new OrbitControls(camera, renderer.domElement)
+
+/**
+ * 加载模型
+ * */
+loader.load('model/brothers.glb', (gltf) => {
+  console.log(gltf)
+  scene.add(gltf.scene)
+})
+/**
+ * 光
+ * */
+// 环境光
+scene.add(new AmbientLight(0xadadad))
 
 function animate() {
   orbitControl.update()
