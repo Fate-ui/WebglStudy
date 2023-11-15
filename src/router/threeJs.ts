@@ -167,6 +167,11 @@ export const threeJsPages: RouteRecordRawExt[] = [
         path: '/threeJsTest/lineMark',
         meta: { title: '3D标记' },
         component: () => import('@/views/ThreeJs/4.实战/24.3D标记.vue')
+      },
+      {
+        path: '/threeJsTest/lightSimulation',
+        meta: { title: '灯罩' },
+        component: () => import('@/views/ThreeJs/4.实战/25.灯罩.vue')
       }
     ]
   }
