@@ -79,6 +79,12 @@ onUnmounted(() => {
 
 <template>
   <div ref="containerRef" />
+  <div class="fixed left-20px top-20px px-20px leading-50px z-1 bg-white rounded">
+    <span>学习来源：</span>
+    <a href="https://www.bilibili.com/video/BV1iX4y1r7Dj/?spm_id_from=333.788&vd_source=c21dc7a2f93289c8e3df1bde97f015b9" target="_blank" class="text-blue">
+      B站：扫射shader
+    </a>
+  </div>
 </template>
 
 <style scoped lang="scss"></style>

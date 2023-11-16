@@ -82,6 +82,11 @@ export const threeJsPages: RouteRecordRawExt[] = [
         path: '/threeJsShader/cityDiffusion',
         meta: { title: '城市扩散波' },
         component: () => import('@/views/ThreeJs/5.shader/3.城市扩散波.vue')
+      },
+      {
+        path: '/threeJsShader/shadertoy',
+        meta: { title: '使用shadertoy的shader' },
+        component: () => import('@/views/ThreeJs/5.shader/4.使用shadertoy.vue')
       }
     ]
   },
