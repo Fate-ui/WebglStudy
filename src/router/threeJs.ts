@@ -65,6 +65,22 @@ export const threeJsPages: RouteRecordRawExt[] = [
     ]
   },
   {
+    path: '/threeJsShader',
+    meta: { title: 'shader' },
+    children: [
+      {
+        path: '/threeJsShader/gradient',
+        meta: { title: '柱体渐变' },
+        component: () => import('@/views/ThreeJs/5.shader/1.柱体渐变.vue')
+      },
+      {
+        path: '/threeJsShader/diffusion',
+        meta: { title: '扩散渐变' },
+        component: () => import('@/views/ThreeJs/5.shader/2.扩散渐变.vue')
+      }
+    ]
+  },
+  {
     path: '/threeJsTest',
     meta: { title: '实战' },
     children: [
@@ -172,6 +188,11 @@ export const threeJsPages: RouteRecordRawExt[] = [
         path: '/threeJsTest/lightSimulation',
         meta: { title: '灯罩' },
         component: () => import('@/views/ThreeJs/4.实战/25.灯罩.vue')
+      },
+      {
+        path: '/threeJsTest/flowLightWall',
+        meta: { title: '流体光墙' },
+        component: () => import('@/views/ThreeJs/4.实战/26.流体光墙.vue')
       }
     ]
   }

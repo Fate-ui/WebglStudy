@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, shallowRef } from 'vue'
+import { onMounted, onUnmounted, shallowRef } from 'vue'
 import {
   Color,
   CylinderGeometry,
@@ -17,6 +17,7 @@ import {
 } from 'three'
 import { useRafFn } from '@vueuse/core'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { disposeThreeJs } from '@/utils'
 
 const size = { width: window.innerWidth, height: window.innerHeight }
 const scene = new Scene()
@@ -115,6 +116,10 @@ scene.add(plane)
 useRafFn(() => {
   renderer.render(scene, camera)
   controls.update()
+})
+
+onUnmounted(() => {
+  disposeThreeJs(scene, renderer)
 })
 </script>
 
