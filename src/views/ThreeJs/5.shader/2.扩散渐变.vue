@@ -22,8 +22,6 @@ const containerRef = shallowRef<HTMLElement>()
 
 const controls = new OrbitControls(camera, renderer.domElement)
 
-const { random } = Math
-
 const vertexShader = `
   varying vec2 vUv;
   void main() {
