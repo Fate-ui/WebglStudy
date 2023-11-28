@@ -102,6 +102,11 @@ export const threeJsPages: RouteRecordRawExt[] = [
         path: '/threeJsShader/shadertoy4',
         meta: { title: 'shadertoy4' },
         component: () => import('@/views/ThreeJs/5.shader/7.shadertoy4.vue')
+      },
+      {
+        path: '/threeJsShader/glsl',
+        meta: { title: 'glsl语法' },
+        component: () => import('@/views/ThreeJs/5.shader/8.glsl语法.vue')
       }
     ]
   },
