@@ -16,9 +16,10 @@ import {
   Scene,
   ShaderMaterial,
   SphereGeometry,
+  Vector2,
   WebGLRenderer
 } from 'three'
-import { useRafFn } from '@vueuse/core'
+import { useEventListener, useRafFn } from '@vueuse/core'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 const size = { width: window.innerWidth, height: window.innerHeight }
@@ -153,6 +154,60 @@ for (const [index, geometry] of geometries.entries()) {
   scene.add(shape)
 }
 
+/**
+ * 矩形
+ * */
+const rectVertexShader = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`
+const rectFragmentShader = `
+varying vec2 vUv;
+uniform float uTime;
+uniform vec2 uMouse;
+
+float rect(vec2 size) {
+  size = vec2(0.5) - size * 0.5;
+  vec2 shaper = vec2(step(size, vUv));
+  shaper *= vec2(step(size, 1.0 - vUv));
+  return shaper.x * shaper.y;
+}
+
+void main() {
+  vec3 color1 = vec3(0.0, 1.0, 1.0);
+  vec3 color2 = vec3(1.0, 1.0, 0.0);
+
+  vec3 color = mix(color1, color2, rect(vec2(0.9, 0.5)));
+  color += mix(vec3(1.0, 1.0, 1.0), vec3(0.0, 0.0, 0.0), distance(uMouse, vUv));
+  gl_FragColor = vec4(color, 1.0);
+}
+`
+const rectMaterial = new ShaderMaterial({
+  vertexShader: rectVertexShader,
+  fragmentShader: rectFragmentShader,
+  side: DoubleSide,
+  uniforms: {
+    uTime: { value: 0 },
+    uMouse: { value: new Vector2() }
+  }
+})
+for (const [index, geometry] of geometries.entries()) {
+  const shape = new Mesh(geometry, rectMaterial)
+  shape.position.x = startX + index * space
+  shape.position.y = -6
+  scene.add(shape)
+}
+
+useEventListener('mousemove', (e) => {
+  const { clientX, clientY } = e
+  const x = clientX / size.width
+  const y = 1 - clientY / size.height
+  rectMaterial.uniforms.uMouse.value = new Vector2(x, y)
+})
+
 const controls = new OrbitControls(camera, renderer.domElement)
 const clock = new Clock()
 useRafFn(() => {
@@ -161,6 +216,7 @@ useRafFn(() => {
   stripeMaterial.uniforms.uTime.value = clock.getElapsedTime()
   circleMaterial.uniforms.uTime.value = clock.getElapsedTime()
   gridMaterial.uniforms.uTime.value = clock.getElapsedTime()
+  rectMaterial.uniforms.uTime.value = clock.getElapsedTime()
 })
 </script>
 

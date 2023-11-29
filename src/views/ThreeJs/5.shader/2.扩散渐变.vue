@@ -63,13 +63,70 @@ const material = new ShaderMaterial({
  * */
 const plane = new Mesh(new PlaneGeometry(10, 10), material)
 plane.rotation.x = -Math.PI / 2
+plane.position.x = -30
 scene.add(plane)
+
+/**
+ * 矩形扩散波
+ * */
+const rectVertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`
+const rectFragmentShader = `
+  varying vec2 vUv;
+  uniform float scale;
+  uniform vec3 color1;
+  uniform vec3 color2;
+
+  float rect(vec2 size) {
+    size = vec2(0.5) - size * 0.5;
+    vec2 shaper = vec2(step(size, vUv));
+    shaper *= vec2(step(size, 1.0 - vUv));
+    return shaper.x * shaper.y;
+  }
+
+  float ringRect(vec2 size, float width) {
+    float inner = rect(size);
+    float outer = rect(size - vec2(width));
+    return inner - outer;
+  }
+
+  void main() {
+    float mixer1 = ringRect(vec2(0.2, 0.2) * scale, 0.05);
+    float mixer2 = ringRect(vec2(0.6, 0.6) * scale, 0.05);
+    float mixer3 = ringRect(vec2(1.0, 1.0) * scale, 0.05);
+    float mixer = mixer1 + mixer2 + mixer3;
+    vec3 color = mix(color1, color2, mixer);
+    gl_FragColor = vec4(color, mixer);
+  }
+
+`
+const rectMaterial = new ShaderMaterial({
+  vertexShader: rectVertexShader,
+  fragmentShader: rectFragmentShader,
+  transparent: true,
+  side: DoubleSide,
+  uniforms: {
+    scale: { value: 0 },
+    color1: { value: new Color('yellow') },
+    color2: { value: new Color('blue') }
+  }
+})
+const plane2 = new Mesh(new PlaneGeometry(10, 10), rectMaterial)
+plane2.rotation.x = -Math.PI / 2
+scene.add(plane2)
 
 useRafFn(() => {
   renderer.render(scene, camera)
   controls.update()
   material.uniforms.scale.value += 0.01
   material.uniforms.scale.value %= 1
+  rectMaterial.uniforms.scale.value += 0.01
+  rectMaterial.uniforms.scale.value %= 1
 })
 
 onUnmounted(() => {
